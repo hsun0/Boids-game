@@ -14,9 +14,10 @@ class Bird():
             return v1[0] * v2[0] + v1[1] * v2[1]
         
         # 兩向量的夾角(內積 = |v1||v2|cosθ)
-        angle = math.acos(dot(v1, v2) / (absVector(v1) * absVector(v2)))
-
-        return angle
+        cos_angle = dot(v1, v2) / (absVector(v1) * absVector(v2))
+        # 處理數值誤差
+        cos_angle = max(-1, min(1, cos_angle))
+        return math.acos(cos_angle)
 
     # 判斷 bird 是否在視野內
     # 1. 是否在視線角度內
@@ -76,7 +77,6 @@ class Bird():
             dAngel += math.atan2(angleVectordiff[1], angleVectordiff[0])
         
         return src.aliFactor * (dAngel / len(birdsInSight))
-    
     # 集中
     def cohesion(self, birdsInSight: list)->float:
         if len(birdsInSight) == 0:
