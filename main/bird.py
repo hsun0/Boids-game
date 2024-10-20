@@ -70,7 +70,10 @@ class Bird():
         dAngel = 0
 
         for bird in birdsInSight:
-            dAngel += math.atan2(math.sin(bird.angle), math.cos(bird.angle))
+            angleVectorself = (math.cos(self.angle), math.sin(self.angle))
+            angleVectorBird = (math.cos(bird.angle), math.sin(bird.angle))
+            angleVectordiff = (angleVectorBird[0] - angleVectorself[0], angleVectorBird[1] - angleVectorself[1])
+            dAngel += math.atan2(angleVectordiff[1], angleVectordiff[0])
         
         return src.aliFactor * (dAngel / len(birdsInSight))
     
