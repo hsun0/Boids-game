@@ -56,12 +56,15 @@ class Bird():
     
     # 跟隨
     def alignment(self, birdsInSight: list)->float:
+        if len(birdsInSight) == 0:
+            return 0
+
         dAngel = 0
 
         for bird in birdsInSight:
-            dAngel += bird.angle
-
-        return src.aliFactor * dAngel
+            dAngel += math.atan2(math.sin(bird.angle), math.cos(bird.angle))
+        
+        return src.aliFactor * (dAngel / len(birdsInSight))
     
     # 集中
     def cohesion(self, birdsInSight: list)->float:

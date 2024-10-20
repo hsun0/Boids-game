@@ -9,12 +9,12 @@ Colors = {
 }
 
 # Arguments:
-windowSize: tuple = (800, 600)
+windowSize: tuple = (1200, 900)
 speed: float = 2
-viewAngle: float = pi
-viewDistance: float = 40
-collisionDistance: float = 0
-sepFactor: float = 0.001
-aliFactor: float = 0.001
-cohFactor: float = 1
-birdNum: int = 20
+viewAngle: float = pi / 2
+viewDistance: float = 100
+collisionDistance: float = 25
+sepFactor: float = 0.05
+aliFactor: float = 0.05
+cohFactor: float = 0.01
+birdNum: int = 50
