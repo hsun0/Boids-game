@@ -64,48 +64,73 @@ class Bird():
         return src.sepFactor * dAngel
     
     # 跟隨
-    def alignment(self, birdsInSight: list)->float:
+    def alignment(self, birdsInSight: list) -> float:
         if len(birdsInSight) == 0:
             return 0
-
-        dAngel = 0
-
+            
+        total_angle_diff = 0
         for bird in birdsInSight:
-            angleVectorself = (math.cos(self.angle), math.sin(self.angle))
-            angleVectorBird = (math.cos(bird.angle), math.sin(bird.angle))
-            angleVectordiff = (angleVectorBird[0] - angleVectorself[0], angleVectorBird[1] - angleVectorself[1])
-            dAngel += math.atan2(angleVectordiff[1], angleVectordiff[0])
+            # 計算角度差
+            angle_diff = bird.angle - self.angle
+            
+            # 正規化角度差到 -π 到 π 的範圍
+            while angle_diff > math.pi:
+                angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi:
+                angle_diff += 2 * math.pi
+                
+            total_angle_diff += angle_diff
         
-        return src.aliFactor * (dAngel / len(birdsInSight))
+        return src.aliFactor * (total_angle_diff / len(birdsInSight))
     # 集中
-    def cohesion(self, birdsInSight: list)->float:
+    def cohesion(self, birdsInSight: list) -> float:
         if len(birdsInSight) == 0:
             return 0
 
         avgX = 0
         avgY = 0
-
+        
         for bird in birdsInSight:
             dx = bird.x - self.x
             dy = bird.y - self.y
-
-            # 處理在邊界兩邊的情況
-            if abs(dx) > src.windowSize[0] - abs(dx):
-                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
-            if abs(dy) > src.windowSize[1] - abs(dy):
-                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
             
+            # 處理環繞邊界的情況
+            if abs(dx) > src.windowSize[0] / 2:
+                dx = dx - src.getSign(dx) * src.windowSize[0]
+            if abs(dy) > src.windowSize[1] / 2:
+                dy = dy - src.getSign(dy) * src.windowSize[1]
+                
             avgX += dx
             avgY += dy
         
-        # 以self為原點的平均座標
+        # 計算平均位置（相對於當前鳥的位置）
         avgX /= len(birdsInSight)
         avgY /= len(birdsInSight)
-
-        # 以self為原點的平均座標的角度
-        dAngel = math.atan2(avgY, avgX)
-
-        return src.cohFactor * dAngel
+        
+        # 計算到中心點的距離
+        distance = math.sqrt(avgX * avgX + avgY * avgY)
+        
+        # 如果距離為0，表示鳥群已經在同一點，不需要轉向
+        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
+            return 0
+            
+        # 計算目標方向
+        target_angle = math.atan2(avgY, avgX)
+        
+        # 計算需要轉向的角度
+        angle_diff = target_angle - self.angle
+        
+        # 正規化角度到 -π 到 π 的範圍
+        while angle_diff > math.pi:
+            angle_diff -= 2 * math.pi
+        while angle_diff < -math.pi:
+            angle_diff += 2 * math.pi
+        
+        # 根據距離調整cohesion強度
+        # 距離越遠，cohesion力越大，但設定上限避免過度轉向
+        distance_factor = min(distance / 100.0, 1.0)  # 可以根據需求調整參數
+        
+        return src.cohFactor * angle_diff * distance_factor
     
     # 更新 bird 的座標，會跟動到 angle, x, y
     def move(self, birds: list)->None:
