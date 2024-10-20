@@ -12,7 +12,7 @@ Colors = {
 # Arguments:
 windowSize: tuple = (1200, 900)
 speed: float = 2
-viewAngle: float = math.pi / 2
+viewAngle: float = 2 * math.pi / 3
 viewDistance: float = 100
 collisionDistance: float = 15
 sepFactor: float = 0.02
