@@ -37,9 +37,9 @@ def main()->None:
             # 更新鳥的座標
             bird.move(birds)
             point = [
-                (bird.x + 8 * math.cos(bird.angle), bird.y + 8 * math.sin(bird.angle)),
-                (bird.x + 4 * math.cos(bird.angle + 2 * math.pi / 3), bird.y + 4 * math.sin(bird.angle + 2 * math.pi / 3)),
-                (bird.x + 4 * math.cos(bird.angle - 2 * math.pi / 3), bird.y + 4 * math.sin(bird.angle - 2 * math.pi / 3))
+                (bird.x + src.birdSize * 2 * math.cos(bird.angle), bird.y + src.birdSize * 2 * math.sin(bird.angle)),
+                (bird.x + src.birdSize * math.cos(bird.angle + 2 * math.pi / 3), bird.y + src.birdSize * math.sin(bird.angle + 2 * math.pi / 3)),
+                (bird.x + src.birdSize * math.cos(bird.angle - 2 * math.pi / 3), bird.y + src.birdSize * math.sin(bird.angle - 2 * math.pi / 3))
             ]
             pygame.draw.polygon(window, src.Colors['white'], point)
 

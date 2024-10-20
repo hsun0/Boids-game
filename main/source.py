@@ -10,7 +10,7 @@ Colors = {
 }
 
 # Arguments:
-windowSize: tuple = (1200, 900)
+windowSize: tuple = (800, 600)
 speed: float = 2
 viewAngle: float = 2 * math.pi / 3
 viewDistance: float = 100
@@ -18,8 +18,9 @@ collisionDistance: float = 15
 sepFactor: float = 0.02
 aliFactor: float = 0.08
 cohFactor: float = 0.1
-birdNum: int = 50
+birdNum: int = 100
 FPS: int = 60
+birdSize: float = 3
 
 # function
 def getSign(x)->int:
