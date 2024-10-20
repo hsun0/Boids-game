@@ -46,8 +46,8 @@ def main()->None:
         # 將緩衝區顯示到螢幕上
         pygame.display.flip() 
 
-        # 60 FPS
-        clock.tick(60)
+        # FPS
+        clock.tick(src.FPS)
     pygame.quit()
 
 if __name__ == '__main__':
