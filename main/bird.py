@@ -1,25 +1,11 @@
 import math
+import source as src
 
 class Bird():
-    def __init__(self,
-                x: float,
-                y: float,
-                angle: float,
-                speed: float,
-                viewAngle: float,
-                viewDistance: float,
-                sepFactor: float,
-                aliFactor: float,
-                cohFactor: float)->None:
+    def __init__(self, x: float, y: float, angle: float)->None:
         self.x = x
         self.y = y
         self.angle = angle # 速度方向(角度)
-        self.speed = speed
-        self.viewAngle = viewAngle
-        self.viewDistance = viewDistance
-        self.sepFactor = sepFactor
-        self.aliFactor = aliFactor
-        self.cohFactor = cohFactor
 
     def vectorAngle(self, v1: tuple, v2: tuple)->float:
         def absVector(v: tuple)->float:
@@ -40,11 +26,11 @@ class Bird():
         vVel = (math.cos(self.angle), math.sin(self.angle)) # 速度方向(向量)
 
         # 是否在視線角度內
-        if self.VectorAngle(vBird, vVel) > self.viewAngle / 2:
+        if self.vectorAngle(vBird, vVel) > src.viewAngle / 2:
             return False
         
         # 是否在視線距離內
-        if (vBird[0] ** 2 + vBird[1] ** 2) > (self.viewDistance ** 2):
+        if (vBird[0] ** 2 + vBird[1] ** 2) > (src.viewDistance ** 2):
             return False
         
         return True
@@ -58,11 +44,15 @@ class Bird():
         dAngel = 0
 
         for bird in birdsInSight:
+            vBird = (bird.x - self.x, bird.y - self.y)
+            if (vBird[0] ** 2 + vBird[1] ** 2) > (src.collisionDistance ** 2):
+                continue
+
             # bird相對於self的角度
             # 注意!! 因為要避開bird，所以用-=，而不是+=
             dAngel -= math.atan2(bird.y - self.y, bird.x - self.x)
 
-        return self.sepFactor * dAngel
+        return src.sepFactor * dAngel
     
     # 跟隨
     def alignment(self, birdsInSight: list)->float:
@@ -71,7 +61,7 @@ class Bird():
         for bird in birdsInSight:
             dAngel += bird.angle
 
-        return self.aliFactor * dAngel
+        return src.aliFactor * dAngel
     
     # 集中
     def cohesion(self, birdsInSight: list)->float:
@@ -79,14 +69,18 @@ class Bird():
         avgVector = (0, 0)
         for bird in birdsInSight:
             avgVector = (avgVector[0] + bird.x, avgVector[1] + bird.y)
+        
+        if len(birdsInSight) == 0:
+            return 0
+        
         avgVector = (avgVector[0] / len(birdsInSight), avgVector[1] / len(birdsInSight))
 
         dAngel = math.atan2(avgVector[1] - self.y, avgVector[0] - self.x)
         
-        return self.cohFactor * dAngel
+        return src.cohFactor * dAngel
     
     # 更新 bird 的座標，會跟動到 angle, x, y
-    def update(self, birds: list)->None:
+    def move(self, birds: list)->None:
         birdsInSight = []
         for bird in birds:
             if bird == self:
@@ -100,5 +94,5 @@ class Bird():
         self.angle += self.cohesion(birdsInSight)
 
         # 更新座標
-        self.x += self.speed * math.cos(self.angle)
-        self.y += self.speed * math.sin(self.angle)
+        self.x = (self.x + src.speed * math.cos(self.angle)) % src.windowSize[0]
+        self.y = (self.y + src.speed * math.sin(self.angle)) % src.windowSize[1]
