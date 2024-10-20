@@ -30,7 +30,9 @@ class Bird():
             return False
         
         # 是否在視線距離內
-        if (vBird[0] ** 2 + vBird[1] ** 2) > (src.viewDistance ** 2):
+        dx = min(abs(bird.x - self.x), src.windowSize[0] - abs(bird.x - self.x))
+        dy = min(abs(bird.y - self.y), src.windowSize[1] - abs(bird.y - self.y))
+        if src.vectorLength((dx, dy)) > src.viewDistance:
             return False
         
         return True
@@ -44,39 +46,65 @@ class Bird():
         dAngel = 0
 
         for bird in birdsInSight:
-            vBird = (bird.x - self.x, bird.y - self.y)
-            if (vBird[0] ** 2 + vBird[1] ** 2) > (src.collisionDistance ** 2):
-                continue
+            dx = bird.x - self.x
+            dy = bird.y - self.y
 
-            # bird相對於self的角度
-            # 注意!! 因為要避開bird，所以用-=，而不是+=
-            dAngel -= math.atan2(bird.y - self.y, bird.x - self.x)
+            # 處理在邊界兩邊的情況
+            if abs(dx) > src.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
+            if abs(dy) > src.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+
+            if src.vectorLength((dx, dy)) > src.collisionDistance:
+                continue
+                
+            dAngel += math.atan2(dy, dx)
 
         return src.sepFactor * dAngel
     
     # 跟隨
     def alignment(self, birdsInSight: list)->float:
+        if len(birdsInSight) == 0:
+            return 0
+
         dAngel = 0
 
         for bird in birdsInSight:
-            dAngel += bird.angle
-
-        return src.aliFactor * dAngel
+            angleVectorself = (math.cos(self.angle), math.sin(self.angle))
+            angleVectorBird = (math.cos(bird.angle), math.sin(bird.angle))
+            angleVectordiff = (angleVectorBird[0] - angleVectorself[0], angleVectorBird[1] - angleVectorself[1])
+            dAngel += math.atan2(angleVectordiff[1], angleVectordiff[0])
+        
+        return src.aliFactor * (dAngel / len(birdsInSight))
     
     # 集中
     def cohesion(self, birdsInSight: list)->float:
-        # 平均位置
-        avgVector = (0, 0)
-        for bird in birdsInSight:
-            avgVector = (avgVector[0] + bird.x, avgVector[1] + bird.y)
-        
         if len(birdsInSight) == 0:
             return 0
-        
-        avgVector = (avgVector[0] / len(birdsInSight), avgVector[1] / len(birdsInSight))
 
-        dAngel = math.atan2(avgVector[1] - self.y, avgVector[0] - self.x)
+        avgX = 0
+        avgY = 0
+
+        for bird in birdsInSight:
+            dx = bird.x - self.x
+            dy = bird.y - self.y
+
+            # 處理在邊界兩邊的情況
+            if abs(dx) > src.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
+            if abs(dy) > src.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+            
+            avgX += dx
+            avgY += dy
         
+        # 以self為原點的平均座標
+        avgX /= len(birdsInSight)
+        avgY /= len(birdsInSight)
+
+        # 以self為原點的平均座標的角度
+        dAngel = math.atan2(avgY, avgX)
+
         return src.cohFactor * dAngel
     
     # 更新 bird 的座標，會跟動到 angle, x, y

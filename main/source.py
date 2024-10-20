@@ -1,4 +1,5 @@
-from math import pi
+import math
+
 Colors = {
     'white': (255, 255, 255),
     'black': (0, 0, 0),
@@ -9,12 +10,25 @@ Colors = {
 }
 
 # Arguments:
-windowSize: tuple = (800, 600)
+windowSize: tuple = (1200, 900)
 speed: float = 2
-viewAngle: float = pi
-viewDistance: float = 40
-collisionDistance: float = 0
-sepFactor: float = 0.001
-aliFactor: float = 0.001
-cohFactor: float = 1
-birdNum: int = 20
+viewAngle: float = 2 * math.pi / 3
+viewDistance: float = 100
+collisionDistance: float = 15
+sepFactor: float = 0.02
+aliFactor: float = 0.08
+cohFactor: float = 0.1
+birdNum: int = 50
+FPS: int = 60
+
+# function
+def getSign(x)->int:
+    if x > 0:
+        return 1
+    elif x < 0:
+        return -1
+    else:
+        return 0
+    
+def vectorLength(v: tuple)->float:
+    return math.sqrt(v[0] ** 2 + v[1] ** 2)
