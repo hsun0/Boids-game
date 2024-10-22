@@ -1,4 +1,7 @@
 import math
+import pygame
+from food import Food
+import random
 import source as src
 
 class Bird():
@@ -6,6 +9,49 @@ class Bird():
         self.x = x
         self.y = y
         self.angle = angle # 速度方向(角度)
+        self.energy = src.initEnergy
+
+    def display(self, window)->None:
+        point = [
+            (self.x + src.birdSize * 2 * math.cos(self.angle), self.y + src.birdSize * 2 * math.sin(self.angle)),
+            (self.x + src.birdSize * math.cos(self.angle + 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle + 2 * math.pi / 3)),
+            (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
+        ]
+
+        def adjustTrans(x: int)->int:
+            if x == 255:
+                return 255
+            return self.getTrans()
+        
+        color = tuple(adjustTrans(x) for x in src.Colors['red'])
+        pygame.draw.polygon(window, color, point)
+
+    def eat(self, foods: list)->None:
+        removeList = []
+
+        # 檢查是否有食物在吃的範圍內，有的話吃掉
+        for food in foods:
+            if src.vectorLength((food.x - self.x, food.y - self.y)) > src.foodCollisionDistance:
+                continue
+            self.energy += 1
+            removeList.append(food)
+        
+        for food in removeList:
+            foods.remove(food)
+        
+        for _ in range(len(removeList)):
+            x = random.uniform(0, src.windowSize[0])
+            y = random.uniform(0, src.windowSize[1])
+            foods.append(Food(x, y))
+
+    def getTrans(self)->int:
+        if self.energy <= 0:
+            return 255
+        if self.energy <= 5:
+            return 150
+        if self.energy <= 10:
+            return 50
+        return 0
 
     def vectorAngle(self, v1: tuple, v2: tuple)->float:
         def absVector(v: tuple)->float:
