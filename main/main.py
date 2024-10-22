@@ -69,8 +69,10 @@ def main()->None:
             for bird in birds:
                 bird.energy -= 1
 
-        if pygame.time.get_ticks() % 1000 < clock.get_time():
-            print("birdNum: ", len(birds))
+        # 在左上角顯示鳥的數量
+        font = pygame.font.Font(None, 20)
+        text = font.render(f'number of Birds: {len(birds)}', True, src.Colors['black'])
+        window.blit(text, (10, 10))
 
         # 將緩衝區顯示到螢幕上
         pygame.display.flip()
