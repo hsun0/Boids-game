@@ -8,3 +8,7 @@ pip install -r requirements.txt
 ```
 python3 main/main.py
 ```
+
+## 按鍵
+- 按左鍵提供食物
+- ESC退出
