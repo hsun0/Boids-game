@@ -25,6 +25,7 @@ foodNum: int = 225
 FPS: int = 60
 birdSize: float = 4.5
 initEnergy: int = 7
+foodSize: float = 3
 foodCollisionDistance: float = 4.5
 copyEnergy: int = 14
 
