@@ -34,11 +34,22 @@ def main()->None:
     while running:
         
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            
+            # 按下 ESC 鍵結束程式
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-            if event.type == pygame.QUIT:
-                running = False
+
+            # 按下滑鼠左鍵，增加食物
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                for _ in range(src.foodPerClick):
+                    angle = random.uniform(0, 2 * math.pi)
+                    food_x = x + random.uniform(0, src.giveFoodRadius) * math.cos(angle)
+                    food_y = y + random.uniform(0, src.giveFoodRadius) * math.sin(angle)
+                    foods.append(Food(food_x, food_y))
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面
@@ -83,6 +94,8 @@ def main()->None:
         font = pygame.font.Font(None, 20)
         text = font.render(f'number of Birds: {len(birds)}', True, src.Colors['black'])
         window.blit(text, (10, 10))
+        text = font.render(f'number of Foods: {len(foods)}', True, src.Colors['black'])
+        window.blit(text, (10, 30))
 
         # 將緩衝區顯示到螢幕上
         pygame.display.flip()
