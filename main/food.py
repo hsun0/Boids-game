@@ -7,4 +7,4 @@ class Food():
         self.y = y
 
     def display(self, window: pygame.Surface)->None:
-        pygame.draw.circle(window, src.Colors['lime'], (int(self.x), int(self.y)), 2)
+        pygame.draw.circle(window, src.Colors['lime'], (int(self.x), int(self.y)), 3)

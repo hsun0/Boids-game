@@ -5,11 +5,12 @@ import random
 import source as src
 
 class Bird():
-    def __init__(self, x: float, y: float, angle: float, energy: int)->None:
+    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple)->None:
         self.x = x
         self.y = y
         self.angle = angle # 速度方向(角度)
         self.energy = energy
+        self.windowSize = windowSize
 
     def display(self, window)->None:
         point = [
@@ -18,6 +19,7 @@ class Bird():
             (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
         ]
 
+        # 調整透明度
         def adjustTrans(x: int)->int:
             if x == 255:
                 return 255
@@ -40,8 +42,8 @@ class Bird():
             foods.remove(food)
         
         for _ in range(len(removeList)):
-            x = random.uniform(0, src.windowSize[0])
-            y = random.uniform(0, src.windowSize[1])
+            x = random.uniform(0, self.windowSize[0])
+            y = random.uniform(0, self.windowSize[1])
             foods.append(Food(x, y))
 
     def getTrans(self)->int:
@@ -81,8 +83,8 @@ class Bird():
             return False
         
         # 是否在視線距離內
-        dx = min(abs(bird.x - self.x), src.windowSize[0] - abs(bird.x - self.x))
-        dy = min(abs(bird.y - self.y), src.windowSize[1] - abs(bird.y - self.y))
+        dx = min(abs(bird.x - self.x), self.windowSize[0] - abs(bird.x - self.x))
+        dy = min(abs(bird.y - self.y), self.windowSize[1] - abs(bird.y - self.y))
         if src.vectorLength((dx, dy)) > src.viewDistance:
             return False
         
@@ -90,7 +92,7 @@ class Bird():
     
     def copy(self)->'Bird':
         self.energy >>= 1
-        return Bird(self.x, self.y, self.angle, self.energy)
+        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize)
     
     ################################
     #以下三個 function 都是回傳改變的角度
@@ -105,10 +107,10 @@ class Bird():
             dy = bird.y - self.y
 
             # 處理在邊界兩邊的情況
-            if abs(dx) > src.windowSize[0] - abs(dx):
-                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
-            if abs(dy) > src.windowSize[1] - abs(dy):
-                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
 
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
@@ -149,10 +151,10 @@ class Bird():
             dy = bird.y - self.y
             
             # 處理環繞邊界的情況
-            if abs(dx) > src.windowSize[0] / 2:
-                dx = dx - src.getSign(dx) * src.windowSize[0]
-            if abs(dy) > src.windowSize[1] / 2:
-                dy = dy - src.getSign(dy) * src.windowSize[1]
+            if abs(dx) > self.windowSize[0] / 2:
+                dx = dx - src.getSign(dx) * self.windowSize[0]
+            if abs(dy) > self.windowSize[1] / 2:
+                dy = dy - src.getSign(dy) * self.windowSize[1]
                 
             avgX += dx
             avgY += dy
@@ -198,10 +200,10 @@ class Bird():
             dy = food.y - self.y
 
             # 處理在邊界兩邊的情況
-            if abs(dx) > src.windowSize[0] - abs(dx):
-                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
-            if abs(dy) > src.windowSize[1] - abs(dy):
-                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
 
             avgX += dx
             avgY += dy
@@ -258,5 +260,5 @@ class Bird():
         self.angle += self.goToFood(foodsInSight)
 
         # 更新座標
-        self.x = (self.x + src.speed * math.cos(self.angle)) % src.windowSize[0]
-        self.y = (self.y + src.speed * math.sin(self.angle)) % src.windowSize[1]
+        self.x = (self.x + src.speed * math.cos(self.angle)) % self.windowSize[0]
+        self.y = (self.y + src.speed * math.sin(self.angle)) % self.windowSize[1]

@@ -10,35 +10,39 @@ def main()->None:
     pygame.init()
 
     # 設定視窗
-    window = pygame.display.set_mode(src.windowSize)
+    window = pygame.display.set_mode((800, 600), pygame.FULLSCREEN)
     pygame.display.set_caption('Boids Simulation')
-
+    windowSize = window.get_size()
     # 初始化鳥群
     birds = []
     for _ in range(src.birdNum):
-        x = random.uniform(0, src.windowSize[0])
-        y = random.uniform(0, src.windowSize[1])
+        x = random.uniform(0, windowSize[0])
+        y = random.uniform(0, windowSize[1])
         angle = random.uniform(-math.pi, math.pi)
-        birds.append(Bird(x, y, angle, src.initEnergy))
+        birds.append(Bird(x, y, angle, src.initEnergy, windowSize))
 
     # 初始化食物
     foods = []
     for _ in range(src.foodNum):
-        x = random.uniform(0, src.windowSize[0])
-        y = random.uniform(0, src.windowSize[1])
+        x = random.uniform(0, windowSize[0])
+        y = random.uniform(0, windowSize[1])
         foods.append(Food(x, y))
 
     # Main Loop
     running = True
     clock = pygame.time.Clock()
     while running:
+        
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
             if event.type == pygame.QUIT:
                 running = False
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面
-        window.fill(src.Colors['white'])
+        window.fill(src.Colors['background'])
 
         removeList = []
 
