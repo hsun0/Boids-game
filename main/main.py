@@ -47,9 +47,19 @@ def main()->None:
                 x, y = event.pos
                 for _ in range(src.foodPerClick):
                     angle = random.uniform(0, 2 * math.pi)
-                    food_x = x + random.uniform(0, src.giveFoodRadius) * math.cos(angle)
-                    food_y = y + random.uniform(0, src.giveFoodRadius) * math.sin(angle)
-                    foods.append(Food(food_x, food_y))
+                    foodX = x + random.uniform(0, src.giveFoodRadius) * math.cos(angle)
+                    foodY = y + random.uniform(0, src.giveFoodRadius) * math.sin(angle)
+
+                    if foodX < 0:
+                        foodX = foodX + windowSize[0]
+                    if foodX > windowSize[0]:
+                        foodX = foodX - windowSize[0]
+                    if foodY < 0:
+                        foodY = foodY + windowSize[1]
+                    if foodY > windowSize[1]:
+                        foodY = foodY - window
+
+                    foods.append(Food(foodX, foodY))
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面
