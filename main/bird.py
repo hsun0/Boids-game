@@ -40,11 +40,6 @@ class Bird():
         
         for food in removeList:
             foods.remove(food)
-        
-        for _ in range(len(removeList)):
-            x = random.uniform(0, self.windowSize[0])
-            y = random.uniform(0, self.windowSize[1])
-            foods.append(Food(x, y))
 
     def getTrans(self)->int:
         if self.energy <= 0:

@@ -68,7 +68,13 @@ def main()->None:
         for bird in removeList:
             birds.remove(bird)
 
-        # 每十秒減少一次所有鳥的能量
+        if pygame.time.get_ticks() % 1000 < clock.get_time():
+            for _ in range(src.foodPerSecond):
+                x = random.uniform(0, windowSize[0])
+                y = random.uniform(0, windowSize[1])
+                foods.append(Food(x, y))
+
+        # 每五秒減少一次所有鳥的能量
         if pygame.time.get_ticks() % 5000 < clock.get_time():
             for bird in birds:
                 bird.energy -= 1

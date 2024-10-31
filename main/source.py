@@ -20,14 +20,15 @@ sepFactor: float = 0.02
 aliFactor: float = 0.08
 cohFactor: float = 0.1
 foodFactor: float = 0.05
-birdNum: int = 100
+birdNum: int = 50
 foodNum: int = 225
 FPS: int = 60
 birdSize: float = 4.5
 initEnergy: int = 7
 foodSize: float = 3
-foodCollisionDistance: float = 4.5
+foodCollisionDistance: float = 5
 copyEnergy: int = 14
+foodPerSecond = 5
 
 # function
 def getSign(x)->int:
