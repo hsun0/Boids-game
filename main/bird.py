@@ -124,11 +124,7 @@ class Bird():
             # 計算角度差
             angle_diff = bird.angle - self.angle
             
-            # 正規化角度差到 -π 到 π 的範圍
-            while angle_diff > math.pi:
-                angle_diff -= 2 * math.pi
-            while angle_diff < -math.pi:
-                angle_diff += 2 * math.pi
+            angle_diff = src.normalizeAngle(angle_diff)
                 
             total_angle_diff += angle_diff
         
@@ -160,10 +156,6 @@ class Bird():
         
         # 計算到中心點的距離
         distance = math.sqrt(avgX * avgX + avgY * avgY)
-        
-        # 如果距離為0，表示鳥群已經在同一點，不需要轉向
-        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
-            return 0
             
         # 計算目標方向
         target_angle = math.atan2(avgY, avgX)
@@ -171,11 +163,8 @@ class Bird():
         # 計算需要轉向的角度
         angle_diff = target_angle - self.angle
         
-        # 正規化角度到 -π 到 π 的範圍
-        while angle_diff > math.pi:
-            angle_diff -= 2 * math.pi
-        while angle_diff < -math.pi:
-            angle_diff += 2 * math.pi
+        # normal angle to [-π, π]
+        angle_diff = src.normalizeAngle(angle_diff)
         
         # 根據距離調整cohesion強度
         # 距離越遠，cohesion力越大，但設定上限避免過度轉向
@@ -209,9 +198,6 @@ class Bird():
 
         # 計算到中心點的距離
         distance = src.vectorLength((avgX, avgY))
-
-        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
-            return 0
         
         # 計算目標方向
         target_angle = math.atan2(avgY, avgX)
@@ -219,11 +205,7 @@ class Bird():
         # 計算需要轉向的角度
         angle_diff = target_angle - self.angle
         
-        # 正規化角度到 -π 到 π 的範圍
-        while angle_diff > math.pi:
-            angle_diff -= 2 * math.pi
-        while angle_diff < -math.pi:
-            angle_diff += 2 * math.pi
+        angle_diff = src.normalizeAngle(angle_diff)
         
         # 根據距離調整cohesion強度
         # 距離越遠，cohesion力越大，但設定上限避免過度轉向

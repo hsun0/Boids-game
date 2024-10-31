@@ -57,7 +57,7 @@ def main()->None:
                     if foodY < 0:
                         foodY = foodY + windowSize[1]
                     if foodY > windowSize[1]:
-                        foodY = foodY - window
+                        foodY = foodY - windowSize[1]
 
                     foods.append(Food(foodX, foodY))
         
@@ -102,9 +102,9 @@ def main()->None:
 
         # 在左上角顯示鳥的數量
         font = pygame.font.Font(None, 20)
-        text = font.render(f'number of Birds: {len(birds)}', True, src.Colors['black'])
+        text = font.render(f'Birds: {len(birds)}', True, src.Colors['black'])
         window.blit(text, (10, 10))
-        text = font.render(f'number of Foods: {len(foods)}', True, src.Colors['black'])
+        text = font.render(f'Foods: {len(foods)}', True, src.Colors['black'])
         window.blit(text, (10, 30))
 
         # 將緩衝區顯示到螢幕上

@@ -29,8 +29,8 @@ foodSize: float = 3
 foodCollisionDistance: float = 5
 copyEnergy: int = 14
 foodPerSecond = 5
-foodPerClick = 10
-giveFoodRadius = 50
+foodPerClick = 3
+giveFoodRadius = 30
 
 # function
 def getSign(x)->int:
@@ -43,3 +43,10 @@ def getSign(x)->int:
     
 def vectorLength(v: tuple)->float:
     return math.sqrt(v[0] ** 2 + v[1] ** 2)
+
+# Normalize the angle to [-π, π]
+def normalizeAngle(angle: float)->float:
+    angle = (angle % (2 * math.pi) + 2 * math.pi) % (2 * math.pi)
+    if angle > math.pi:
+        angle -= 2 * math.pi
+    return angle
