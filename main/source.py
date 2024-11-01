@@ -7,11 +7,11 @@ Colors = {
     'green': (0, 255, 0),
     'blue': (0, 0, 255),
     'yellow': (255, 255, 0),
-    'lime': (50, 205, 50),
+    'lime': (50, 180, 50),
+    'background': (255,255,255)
 }
 
 # Arguments:
-windowSize: tuple = (800, 600)
 speed: float = 2
 viewAngle: float = 2 * math.pi / 3
 viewDistance: float = 100
@@ -20,13 +20,17 @@ sepFactor: float = 0.02
 aliFactor: float = 0.08
 cohFactor: float = 0.1
 foodFactor: float = 0.05
-birdNum: int = 100
-foodNum: int = 225
+birdNum: int = 50
+foodNum: int = 100
 FPS: int = 60
-birdSize: float = 3
+birdSize: float = 4.5
 initEnergy: int = 7
-foodCollisionDistance: float = 3
+foodSize: float = 3
+foodCollisionDistance: float = 5
 copyEnergy: int = 14
+foodPerSecond = 5
+foodPerClick = 3
+giveFoodRadius = 30
 
 # function
 def getSign(x)->int:
@@ -39,3 +43,10 @@ def getSign(x)->int:
     
 def vectorLength(v: tuple)->float:
     return math.sqrt(v[0] ** 2 + v[1] ** 2)
+
+# Normalize the angle to [-π, π]
+def normalizeAngle(angle: float)->float:
+    angle = (angle % (2 * math.pi) + 2 * math.pi) % (2 * math.pi)
+    if angle > math.pi:
+        angle -= 2 * math.pi
+    return angle

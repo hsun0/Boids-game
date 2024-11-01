@@ -5,11 +5,12 @@ import random
 import source as src
 
 class Bird():
-    def __init__(self, x: float, y: float, angle: float, energy: int)->None:
+    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple)->None:
         self.x = x
         self.y = y
         self.angle = angle # 速度方向(角度)
         self.energy = energy
+        self.windowSize = windowSize
 
     def display(self, window)->None:
         point = [
@@ -18,6 +19,7 @@ class Bird():
             (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
         ]
 
+        # 調整透明度
         def adjustTrans(x: int)->int:
             if x == 255:
                 return 255
@@ -38,11 +40,6 @@ class Bird():
         
         for food in removeList:
             foods.remove(food)
-        
-        for _ in range(len(removeList)):
-            x = random.uniform(0, src.windowSize[0])
-            y = random.uniform(0, src.windowSize[1])
-            foods.append(Food(x, y))
 
     def getTrans(self)->int:
         if self.energy <= 0:
@@ -81,8 +78,8 @@ class Bird():
             return False
         
         # 是否在視線距離內
-        dx = min(abs(bird.x - self.x), src.windowSize[0] - abs(bird.x - self.x))
-        dy = min(abs(bird.y - self.y), src.windowSize[1] - abs(bird.y - self.y))
+        dx = min(abs(bird.x - self.x), self.windowSize[0] - abs(bird.x - self.x))
+        dy = min(abs(bird.y - self.y), self.windowSize[1] - abs(bird.y - self.y))
         if src.vectorLength((dx, dy)) > src.viewDistance:
             return False
         
@@ -90,7 +87,7 @@ class Bird():
     
     def copy(self)->'Bird':
         self.energy >>= 1
-        return Bird(self.x, self.y, self.angle, self.energy)
+        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize)
     
     ################################
     #以下三個 function 都是回傳改變的角度
@@ -105,10 +102,10 @@ class Bird():
             dy = bird.y - self.y
 
             # 處理在邊界兩邊的情況
-            if abs(dx) > src.windowSize[0] - abs(dx):
-                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
-            if abs(dy) > src.windowSize[1] - abs(dy):
-                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
 
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
@@ -127,11 +124,7 @@ class Bird():
             # 計算角度差
             angle_diff = bird.angle - self.angle
             
-            # 正規化角度差到 -π 到 π 的範圍
-            while angle_diff > math.pi:
-                angle_diff -= 2 * math.pi
-            while angle_diff < -math.pi:
-                angle_diff += 2 * math.pi
+            angle_diff = src.normalizeAngle(angle_diff)
                 
             total_angle_diff += angle_diff
         
@@ -149,10 +142,10 @@ class Bird():
             dy = bird.y - self.y
             
             # 處理環繞邊界的情況
-            if abs(dx) > src.windowSize[0] / 2:
-                dx = dx - src.getSign(dx) * src.windowSize[0]
-            if abs(dy) > src.windowSize[1] / 2:
-                dy = dy - src.getSign(dy) * src.windowSize[1]
+            if abs(dx) > self.windowSize[0] / 2:
+                dx = dx - src.getSign(dx) * self.windowSize[0]
+            if abs(dy) > self.windowSize[1] / 2:
+                dy = dy - src.getSign(dy) * self.windowSize[1]
                 
             avgX += dx
             avgY += dy
@@ -163,10 +156,6 @@ class Bird():
         
         # 計算到中心點的距離
         distance = math.sqrt(avgX * avgX + avgY * avgY)
-        
-        # 如果距離為0，表示鳥群已經在同一點，不需要轉向
-        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
-            return 0
             
         # 計算目標方向
         target_angle = math.atan2(avgY, avgX)
@@ -174,11 +163,8 @@ class Bird():
         # 計算需要轉向的角度
         angle_diff = target_angle - self.angle
         
-        # 正規化角度到 -π 到 π 的範圍
-        while angle_diff > math.pi:
-            angle_diff -= 2 * math.pi
-        while angle_diff < -math.pi:
-            angle_diff += 2 * math.pi
+        # normal angle to [-π, π]
+        angle_diff = src.normalizeAngle(angle_diff)
         
         # 根據距離調整cohesion強度
         # 距離越遠，cohesion力越大，但設定上限避免過度轉向
@@ -198,10 +184,10 @@ class Bird():
             dy = food.y - self.y
 
             # 處理在邊界兩邊的情況
-            if abs(dx) > src.windowSize[0] - abs(dx):
-                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
-            if abs(dy) > src.windowSize[1] - abs(dy):
-                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
 
             avgX += dx
             avgY += dy
@@ -212,9 +198,6 @@ class Bird():
 
         # 計算到中心點的距離
         distance = src.vectorLength((avgX, avgY))
-
-        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
-            return 0
         
         # 計算目標方向
         target_angle = math.atan2(avgY, avgX)
@@ -222,11 +205,7 @@ class Bird():
         # 計算需要轉向的角度
         angle_diff = target_angle - self.angle
         
-        # 正規化角度到 -π 到 π 的範圍
-        while angle_diff > math.pi:
-            angle_diff -= 2 * math.pi
-        while angle_diff < -math.pi:
-            angle_diff += 2 * math.pi
+        angle_diff = src.normalizeAngle(angle_diff)
         
         # 根據距離調整cohesion強度
         # 距離越遠，cohesion力越大，但設定上限避免過度轉向
@@ -258,5 +237,5 @@ class Bird():
         self.angle += self.goToFood(foodsInSight)
 
         # 更新座標
-        self.x = (self.x + src.speed * math.cos(self.angle)) % src.windowSize[0]
-        self.y = (self.y + src.speed * math.sin(self.angle)) % src.windowSize[1]
+        self.x = (self.x + src.speed * math.cos(self.angle)) % self.windowSize[0]
+        self.y = (self.y + src.speed * math.sin(self.angle)) % self.windowSize[1]
