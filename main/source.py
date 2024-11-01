@@ -6,11 +6,12 @@ Colors = {
     'red': (255, 0, 0),
     'green': (0, 255, 0),
     'blue': (0, 0, 255),
-    'yellow': (255, 255, 0)
+    'yellow': (255, 255, 0),
+    'lime': (50, 205, 50),
 }
 
 # Arguments:
-windowSize: tuple = (1200, 900)
+windowSize: tuple = (800, 600)
 speed: float = 2
 viewAngle: float = 2 * math.pi / 3
 viewDistance: float = 100
@@ -18,8 +19,14 @@ collisionDistance: float = 15
 sepFactor: float = 0.02
 aliFactor: float = 0.08
 cohFactor: float = 0.1
-birdNum: int = 50
+foodFactor: float = 0.05
+birdNum: int = 100
+foodNum: int = 225
 FPS: int = 60
+birdSize: float = 3
+initEnergy: int = 7
+foodCollisionDistance: float = 3
+copyEnergy: int = 14
 
 # function
 def getSign(x)->int:

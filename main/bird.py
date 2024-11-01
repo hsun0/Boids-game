@@ -1,11 +1,57 @@
 import math
+import pygame
+from food import Food
+import random
 import source as src
 
 class Bird():
-    def __init__(self, x: float, y: float, angle: float)->None:
+    def __init__(self, x: float, y: float, angle: float, energy: int)->None:
         self.x = x
         self.y = y
         self.angle = angle # 速度方向(角度)
+        self.energy = energy
+
+    def display(self, window)->None:
+        point = [
+            (self.x + src.birdSize * 2 * math.cos(self.angle), self.y + src.birdSize * 2 * math.sin(self.angle)),
+            (self.x + src.birdSize * math.cos(self.angle + 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle + 2 * math.pi / 3)),
+            (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
+        ]
+
+        def adjustTrans(x: int)->int:
+            if x == 255:
+                return 255
+            return self.getTrans()
+        
+        color = tuple(adjustTrans(x) for x in src.Colors['red'])
+        pygame.draw.polygon(window, color, point)
+
+    def eat(self, foods: list)->None:
+        removeList = []
+
+        # 檢查是否有食物在吃的範圍內，有的話吃掉
+        for food in foods:
+            if src.vectorLength((food.x - self.x, food.y - self.y)) > src.foodCollisionDistance:
+                continue
+            self.energy += 1
+            removeList.append(food)
+        
+        for food in removeList:
+            foods.remove(food)
+        
+        for _ in range(len(removeList)):
+            x = random.uniform(0, src.windowSize[0])
+            y = random.uniform(0, src.windowSize[1])
+            foods.append(Food(x, y))
+
+    def getTrans(self)->int:
+        if self.energy <= 0:
+            return 255
+        if self.energy <= 5:
+            return 150
+        if self.energy <= 10:
+            return 50
+        return 0
 
     def vectorAngle(self, v1: tuple, v2: tuple)->float:
         def absVector(v: tuple)->float:
@@ -23,6 +69,10 @@ class Bird():
     # 1. 是否在視線角度內
     # 2. 是否在視線距離內
     def isInSight(self, bird: 'Bird')->bool:
+        # 避免除以 0
+        if src.vectorLength((bird.x - self.x, bird.y - self.y)) < 0.00001:
+            return False
+        
         vBird = (bird.x - self.x, bird.y - self.y) # 以self為原點，平移過的座標(向量)
         vVel = (math.cos(self.angle), math.sin(self.angle)) # 速度方向(向量)
 
@@ -37,6 +87,10 @@ class Bird():
             return False
         
         return True
+    
+    def copy(self)->'Bird':
+        self.energy >>= 1
+        return Bird(self.x, self.y, self.angle, self.energy)
     
     ################################
     #以下三個 function 都是回傳改變的角度
@@ -132,19 +186,76 @@ class Bird():
         
         return src.cohFactor * angle_diff * distance_factor
     
+    def goToFood(self, foodsInSight: list)->float:
+        if len(foodsInSight) == 0:
+            return 0
+        
+        avgX = 0
+        avgY = 0
+
+        for food in foodsInSight:
+            dx = food.x - self.x
+            dy = food.y - self.y
+
+            # 處理在邊界兩邊的情況
+            if abs(dx) > src.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (src.windowSize[0] - abs(dx))
+            if abs(dy) > src.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (src.windowSize[1] - abs(dy))
+
+            avgX += dx
+            avgY += dy
+
+        # 計算平均位置（相對於當前鳥的位置）
+        avgX /= len(foodsInSight)
+        avgY /= len(foodsInSight)
+
+        # 計算到中心點的距離
+        distance = src.vectorLength((avgX, avgY))
+
+        if distance < 0.0001:  # 使用小數避免浮點數精確度問題
+            return 0
+        
+        # 計算目標方向
+        target_angle = math.atan2(avgY, avgX)
+        
+        # 計算需要轉向的角度
+        angle_diff = target_angle - self.angle
+        
+        # 正規化角度到 -π 到 π 的範圍
+        while angle_diff > math.pi:
+            angle_diff -= 2 * math.pi
+        while angle_diff < -math.pi:
+            angle_diff += 2 * math.pi
+        
+        # 根據距離調整cohesion強度
+        # 距離越遠，cohesion力越大，但設定上限避免過度轉向
+        distance_factor = min(distance / 100.0, 1.0)  # 可以根據需求調整參數
+
+        return src.foodFactor * angle_diff * distance_factor
+    
     # 更新 bird 的座標，會跟動到 angle, x, y
-    def move(self, birds: list)->None:
+    def move(self, birds: list, foods: list)->None:
+
+        # 找出視野內的鳥
         birdsInSight = []
         for bird in birds:
             if bird == self:
                 continue
             if self.isInSight(bird):
                 birdsInSight.append(bird)
+
+        # 找出視野內的食物
+        foodsInSight = []
+        for food in foods:
+            if src.vectorLength((food.x - self.x, food.y - self.y)) < src.viewDistance:
+                foodsInSight.append(food)
         
         # 更新角度
         self.angle += self.separation(birdsInSight)
         self.angle += self.alignment(birdsInSight)
         self.angle += self.cohesion(birdsInSight)
+        self.angle += self.goToFood(foodsInSight)
 
         # 更新座標
         self.x = (self.x + src.speed * math.cos(self.angle)) % src.windowSize[0]
