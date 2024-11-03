@@ -60,15 +60,15 @@ class Bird():
         cos_angle = max(-1, min(1, cos_angle))
         return math.acos(cos_angle)
 
-    # 判斷 bird 是否在視野內
+    # 判斷 bird or food 是否在視野內
     # 1. 是否在視線角度內
     # 2. 是否在視線距離內
-    def isInSight(self, bird: 'Bird')->bool:
+    def isInSight(self, obj)->bool:
         # 避免除以 0
-        if src.vectorLength((bird.x - self.x, bird.y - self.y)) < 0.00001:
+        if src.vectorLength((obj.x - self.x, obj.y - self.y)) < 0.00001:
             return False
         
-        vBird = (bird.x - self.x, bird.y - self.y) # 以self為原點，平移過的座標(向量)
+        vBird = (obj.x - self.x, obj.y - self.y) # 以self為原點，平移過的座標(向量)
         vVel = (math.cos(self.angle), math.sin(self.angle)) # 速度方向(向量)
 
         # 是否在視線角度內
@@ -76,8 +76,8 @@ class Bird():
             return False
         
         # 是否在視線距離內
-        dx = min(abs(bird.x - self.x), self.windowSize[0] - abs(bird.x - self.x))
-        dy = min(abs(bird.y - self.y), self.windowSize[1] - abs(bird.y - self.y))
+        dx = min(abs(obj.x - self.x), self.windowSize[0] - abs(obj.x - self.x))
+        dy = min(abs(obj.y - self.y), self.windowSize[1] - abs(obj.y - self.y))
         if src.vectorLength((dx, dy)) > src.viewDistance:
             return False
         
@@ -225,7 +225,7 @@ class Bird():
         # 找出視野內的食物
         foodsInSight = []
         for food in foods:
-            if src.vectorLength((food.x - self.x, food.y - self.y)) < src.viewDistance:
+            if self.isInSight(food):
                 foodsInSight.append(food)
         
         # 更新角度
