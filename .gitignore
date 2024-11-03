@@ -3,3 +3,4 @@ test*
 *.dll
 *.dylib
 *.exe
+*.DS_Store
