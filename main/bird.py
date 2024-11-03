@@ -1,7 +1,5 @@
 import math
 import pygame
-from food import Food
-import random
 import source as src
 
 class Bird():
