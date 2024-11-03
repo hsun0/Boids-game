@@ -90,7 +90,7 @@ class Bird():
         return Bird(self.x, self.y, self.angle, self.energy, self.windowSize)
     
     ################################
-    #以下三個 function 都是回傳改變的角度
+    #以下四個 function 都是回傳改變的角度
     ################################
 
     # 避免碰撞
@@ -168,8 +168,8 @@ class Bird():
         
         # 根據距離調整cohesion強度
         # 距離越遠，cohesion力越大，但設定上限避免過度轉向
-        distance_factor = min(distance / 100.0, 1.0)  # 可以根據需求調整參數
-        
+        distance_factor = min(distance / 100.0, 1.0)
+
         return src.cohFactor * angle_diff * distance_factor
     
     def goToFood(self, foodsInSight: list)->float:
@@ -207,9 +207,9 @@ class Bird():
         
         angle_diff = src.normalizeAngle(angle_diff)
         
-        # 根據距離調整cohesion強度
-        # 距離越遠，cohesion力越大，但設定上限避免過度轉向
-        distance_factor = min(distance / 100.0, 1.0)  # 可以根據需求調整參數
+        # 根據距離調整goToFood強度
+        # 距離越遠，goToFood力越大，但設定上限避免過度轉向
+        distance_factor = min(distance / 100.0, 1.0)
 
         return src.foodFactor * angle_diff * distance_factor
     
