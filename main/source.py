@@ -29,8 +29,10 @@ foodSize: float = 3
 foodCollisionDistance: float = 5
 copyEnergy: int = 14
 foodPerSecond = 5
-foodPerClick = 3
+foodPerClick = 3    
 giveFoodRadius = 30
+colorEnergy1 = 5
+colorEnergy2 = 10
 
 # function
 def getSign(x)->int:

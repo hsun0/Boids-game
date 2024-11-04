@@ -42,9 +42,9 @@ class Bird():
     def getTrans(self)->int:
         if self.energy <= 0:
             return 255
-        if self.energy <= 5:
+        if self.energy <= src.colorEnergy1:
             return 150
-        if self.energy <= 10:
+        if self.energy <= src.colorEnergy2:
             return 50
         return 0
 
