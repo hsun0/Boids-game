@@ -121,8 +121,6 @@ class Bird():
         for bird in birdsInSight:
             # 計算角度差
             angle_diff = bird.angle - self.angle
-            
-            angle_diff = src.normalizeAngle(angle_diff)
                 
             total_angle_diff += angle_diff
         
