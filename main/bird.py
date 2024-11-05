@@ -108,7 +108,7 @@ class Bird():
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
                 
-            dAngel += math.atan2(dy, dx)
+            dAngel -= math.atan2(dy, dx)
 
         return src.sepFactor * dAngel
     
