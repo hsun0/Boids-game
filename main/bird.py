@@ -191,9 +191,6 @@ class Bird():
         # 計算平均位置（相對於當前鳥的位置）
         avgX /= len(foodsInSight)
         avgY /= len(foodsInSight)
-
-        # 計算到中心點的距離
-        distance = src.vectorLength((avgX, avgY))
         
         # 計算目標方向
         target_angle = math.atan2(avgY, avgX)
@@ -202,12 +199,8 @@ class Bird():
         angle_diff = target_angle - self.angle
         
         angle_diff = src.normalizeAngle(angle_diff)
-        
-        # 根據距離調整goToFood強度
-        # 距離越遠，goToFood力越大，但設定上限避免過度轉向
-        distance_factor = min(distance / 100.0, 1.0)
 
-        return src.foodFactor * angle_diff * distance_factor
+        return src.foodFactor * angle_diff
     
     # 更新 bird 的座標，會跟動到 angle, x, y
     def move(self, birds: list, foods: list)->None:
