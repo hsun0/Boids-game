@@ -93,7 +93,11 @@ class Bird():
 
     # 避免碰撞
     def separation(self, birdsInSight: list)->float:
+        if len(birdsInSight) == 0:
+            return 0
         dAngel = 0
+
+        totalX, totalY = 0, 0
 
         for bird in birdsInSight:
             dx = bird.x - self.x
@@ -107,8 +111,12 @@ class Bird():
 
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
-                
-            dAngel -= math.atan2(dy, dx)
+            totalX += dx
+            totalY += dy
+        
+        dAngel -= (math.atan2(totalY, totalX) - self.angle)
+
+        dAngel = src.normalizeAngle(dAngel)
 
         return src.sepFactor * dAngel
     
@@ -125,6 +133,7 @@ class Bird():
             total_angle_diff += angle_diff
         
         return src.aliFactor * (total_angle_diff / len(birdsInSight))
+    
     # 集中
     def cohesion(self, birdsInSight: list) -> float:
         if len(birdsInSight) == 0:
