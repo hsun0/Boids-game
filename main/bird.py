@@ -4,6 +4,7 @@ import source as src
 
 class Bird():
     def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple, group_id: int)->None:
+        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
         self.angle = angle
@@ -12,6 +13,7 @@ class Bird():
         self.group_id = group_id  # 新增群體標識
 
     def display(self, window)->None:
+        # 預先計算三角函數值
         point = [
             (self.x + src.birdSize * 2 * math.cos(self.angle), self.y + src.birdSize * 2 * math.sin(self.angle)),
             (self.x + src.birdSize * math.cos(self.angle + 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle + 2 * math.pi / 3)),

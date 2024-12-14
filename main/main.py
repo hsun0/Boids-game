@@ -115,6 +115,11 @@ def main()->None:
 
         # FPS
         clock.tick(src.FPS)
+        background = pygame.Surface(windowSize)
+        background = background.convert()
+        background.fill(src.Colors['background'])
+
+    
     pygame.quit()
 
 if __name__ == '__main__':
