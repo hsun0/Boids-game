@@ -4,3 +4,4 @@ test*
 *.dylib
 *.exe
 *.DS_Store
+*.zip
