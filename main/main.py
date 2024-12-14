@@ -36,7 +36,7 @@ def main()->None:
         foods.append(Food(x, y))
 
     # 初始化鯊魚
-    shark = Shark(400, 300)
+    shark = Shark(400, 300, windowSize)
 
     # Main Loop
     running = True
@@ -47,25 +47,21 @@ def main()->None:
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w] and not keys[pygame.K_a] and not keys[pygame.K_d]:
-            shark.y -= src.sharkSpeed
+            shark.move("up")
         elif keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d]:
-            shark.y += src.sharkSpeed
+            shark.move("down")
         elif keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            shark.x -= src.sharkSpeed
+            shark.move("left")
         elif keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            shark.x += src.sharkSpeed
+            shark.move("right")
         elif keys[pygame.K_w] and keys[pygame.K_a]:
-            shark.y -= src.sharkSpeed / math.sqrt(2)
-            shark.x -= src.sharkSpeed / math.sqrt(2)
+            shark.move("upleft")
         elif keys[pygame.K_w] and keys[pygame.K_d]:
-            shark.y -= src.sharkSpeed / math.sqrt(2)
-            shark.x += src.sharkSpeed / math.sqrt(2)
+            shark.move("upright")
         elif keys[pygame.K_s] and keys[pygame.K_a]:
-            shark.y += src.sharkSpeed / math.sqrt(2)
-            shark.x -= src.sharkSpeed / math.sqrt(2)
+            shark.move("downleft")
         elif keys[pygame.K_s] and keys[pygame.K_d]:
-            shark.y += src.sharkSpeed / math.sqrt(2)
-            shark.x += src.sharkSpeed / math.sqrt(2)
+            shark.move("downright")
             
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -112,7 +108,7 @@ def main()->None:
         if currentEnabled:
             dPos = (currentDirection[0] * src.currentForce, currentDirection[1] * src.currentForce)
             def move(obj):
-                if(type(obj) == Obstacle):
+                if(type(obj) == Obstacle or type(obj) == Shark):
                     obj.x += dPos[0] / 2
                     obj.y += dPos[1] / 2
                 elif(type(obj) == Bird):
@@ -145,6 +141,7 @@ def main()->None:
                 move(food)
             for obstacle in obstacles:
                 move(obstacle)
+            move(shark)
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面

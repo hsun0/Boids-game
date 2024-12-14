@@ -19,6 +19,7 @@ viewAngle: float = 2 * math.pi / 3
 viewDistance: float = 100
 collisionDistance: float = 15
 sepFactor: float = 0.02
+sepDiffFactor: float = 0.2
 aliFactor: float = 0.08
 cohFactor: float = 0.1
 foodFactor: float = 0.05
@@ -39,6 +40,7 @@ currentForce: int = 0.2
 currentAngleFactor = 0.01
 groupNum = 3  # 群體數量
 sharkSpeed = 2
+sharkScale = 0.06
 COLORS_BY_GROUP = [
     (255, 0, 0),    # 紅色群體
     (0, 255, 0),    # 綠色群體

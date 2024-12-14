@@ -98,12 +98,14 @@ class Bird():
 
     # 避免碰撞
     def separation(self, birdsInSight: list)->float:
-        if len(birdsInSight) == 0:
+        
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
         dAngel = 0
 
         totalX, totalY = 0, 0
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             dx = bird.x - self.x
             dy = bird.y - self.y
 
@@ -115,14 +117,42 @@ class Bird():
 
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
-            totalX += dx * [2, 1][self.group_id == bird.group_id]
-            totalY += dy * [2, 1][self.group_id == bird.group_id]
+            totalX += dx
+            totalY += dy
         
         dAngel -= (math.atan2(totalY, totalX) - self.angle)
 
         dAngel = src.normalizeAngle(dAngel)
 
         return src.sepFactor * dAngel
+    
+    def separationDiffGroup(self, birdsInSight: list)->float:
+        diff_group_birds = [bird for bird in birdsInSight if bird.group_id != self.group_id]
+        if len(diff_group_birds) == 0:
+            return 0
+        dAngel = 0
+
+        totalX, totalY = 0, 0
+        for bird in diff_group_birds:
+            dx = bird.x - self.x
+            dy = bird.y - self.y
+
+            # 處理在邊界兩邊的情況
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
+
+            if src.vectorLength((dx, dy)) > src.collisionDistance:
+                continue
+            totalX += dx
+            totalY += dy
+        
+        dAngel -= (math.atan2(totalY, totalX) - self.angle)
+
+        dAngel = src.normalizeAngle(dAngel)
+
+        return src.sepDiffFactor * dAngel
     
     # 跟隨
     def alignment(self, birdsInSight: list) -> float:
