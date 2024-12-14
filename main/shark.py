@@ -41,38 +41,46 @@ class Shark:
         # pygame.draw.circle(window, (255, 0, 0), (int(self.x), int(self.y)), self.radius, 1)
         window.blit(self.sharkImg, sharkRect)
 
-    def move(self, dir: str) -> None:
+    def move(self, dir: str, obstacles: list) -> None:
+        nextX = self.x
+        nextY = self.y
         if dir == "up":
-            self.y -= src.sharkSpeed
+            nextY -= src.sharkSpeed
             self.sharkImg = self.sharkImgs['up']
         elif dir == "down":
-            self.y += src.sharkSpeed
+            nextY += src.sharkSpeed
             self.sharkImg = self.sharkImgs['down']
         elif dir == "left":
-            self.x -= src.sharkSpeed
+            nextX -= src.sharkSpeed
             self.sharkImg = self.sharkImgs['left']
         elif dir == "right":
-            self.x += src.sharkSpeed
+            nextX += src.sharkSpeed
             self.sharkImg = self.sharkImgs['right']
         elif dir == "upleft":
-            self.x -= src.sharkSpeed / math.sqrt(2)
-            self.y -= src.sharkSpeed / math.sqrt(2)
+            nextX -= src.sharkSpeed / math.sqrt(2)
+            nextY -= src.sharkSpeed / math.sqrt(2)
             self.sharkImg = self.sharkImgs['upleft']
         elif dir == "upright":
-            self.x += src.sharkSpeed / math.sqrt(2)
-            self.y -= src.sharkSpeed / math.sqrt(2)
+            nextX += src.sharkSpeed / math.sqrt(2)
+            nextY -= src.sharkSpeed / math.sqrt(2)
             self.sharkImg = self.sharkImgs['upright']
         elif dir == "downleft":
-            self.x -= src.sharkSpeed / math.sqrt(2)
-            self.y += src.sharkSpeed / math.sqrt(2)
+            nextX -= src.sharkSpeed / math.sqrt(2)
+            nextY += src.sharkSpeed / math.sqrt(2)
             self.sharkImg = self.sharkImgs['downleft']
         elif dir == "downright":
-            self.x += src.sharkSpeed / math.sqrt(2)
-            self.y += src.sharkSpeed / math.sqrt(2)
+            nextX += src.sharkSpeed / math.sqrt(2)
+            nextY += src.sharkSpeed / math.sqrt(2)
             self.sharkImg = self.sharkImgs['downright']
+
+        for obstacle in obstacles:
+            if src.vectorLength((obstacle.x - nextX, obstacle.y - nextY)) < src.obstacleRadius + self.radius:
+                return
+        self.x = nextX
+        self.y = nextY
         self.x %= self.windowSize[0]
         self.y %= self.windowSize[1]
-
+    
     def repel_force(self, bird_x: float, bird_y: float) -> tuple:
         dx = bird_x - self.x
         dy = bird_y - self.y

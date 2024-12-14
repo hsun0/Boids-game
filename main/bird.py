@@ -41,6 +41,12 @@ class Bird():
         
         for food in removeList:
             foods.remove(food)
+    
+    def beEaten(self, shark)->bool:
+        if src.vectorLength((shark.x - self.x, shark.y - self.y)) > src.sharkRadius:
+            return False
+        self.energy = 0
+        return True
 
     def getTrans(self)->int:
         if self.energy <= 0:

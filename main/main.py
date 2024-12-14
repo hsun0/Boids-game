@@ -47,21 +47,21 @@ def main()->None:
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w] and not keys[pygame.K_a] and not keys[pygame.K_d]:
-            shark.move("up")
+            shark.move("up", obstacles)
         elif keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d]:
-            shark.move("down")
+            shark.move("down", obstacles)
         elif keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            shark.move("left")
+            shark.move("left", obstacles)
         elif keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            shark.move("right")
+            shark.move("right", obstacles)
         elif keys[pygame.K_w] and keys[pygame.K_a]:
-            shark.move("upleft")
+            shark.move("upleft", obstacles)
         elif keys[pygame.K_w] and keys[pygame.K_d]:
-            shark.move("upright")
+            shark.move("upright", obstacles)
         elif keys[pygame.K_s] and keys[pygame.K_a]:
-            shark.move("downleft")
+            shark.move("downleft", obstacles)
         elif keys[pygame.K_s] and keys[pygame.K_d]:
-            shark.move("downright")
+            shark.move("downright", obstacles)
             
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -158,6 +158,7 @@ def main()->None:
             # 更新鳥的座標
             bird.move(birds, foods, obstacles, shark)
             bird.eat(foods)
+            bird.beEaten(shark)
             bird.display(window)
 
             # 移除沒有能量的鳥
