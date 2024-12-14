@@ -4,7 +4,7 @@ from bird import Bird
 import random
 import math
 from food import Food
-
+from obstacle import Obstacle
 def main()->None:
     # 要有這個不然無法使用 pygame 的功能
     pygame.init()
@@ -16,8 +16,9 @@ def main()->None:
     # 初始化鳥群
     birds = []
     numbreOfBirds = []
-    birds_per_group = src.birdNum // src.NUM_GROUPS
-    for group_id in range(src.NUM_GROUPS):
+    obstacles = []
+    birds_per_group = src.birdNum // src.groupNum
+    for group_id in range(src.groupNum):
         numbreOfBirds.append(birds_per_group)
         for _ in range(birds_per_group):
             x = random.uniform(0, windowSize[0])
@@ -46,6 +47,9 @@ def main()->None:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                if event.key == pygame.K_o:
+                    pos = pygame.mouse.get_pos()
+                    obstacles.append(Obstacle(pos[0], pos[1]))
 
             # 按下滑鼠左鍵，增加食物
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -72,10 +76,13 @@ def main()->None:
 
         removeList = []
 
+        for obstacle in obstacles:
+            obstacle.display(window)
+
         # 畫出所有的鳥
         for bird in birds:
             # 更新鳥的座標
-            bird.move(birds, foods)
+            bird.move(birds, foods, obstacles)
             bird.eat(foods)
             bird.display(window)
 
@@ -111,7 +118,7 @@ def main()->None:
         font = pygame.font.Font(None, 20)
         text = font.render(f'Foods: {len(foods)}', True, src.Colors['black'])
         window.blit(text, (10, 10))
-        for i in range(src.NUM_GROUPS):
+        for i in range(src.groupNum):
             text = font.render(f'Group {i + 1}: {numbreOfBirds[i]}', True, src.COLORS_BY_GROUP[i])
             window.blit(text, (10, 30 + 20 * i))
 

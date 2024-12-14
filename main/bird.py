@@ -218,9 +218,26 @@ class Bird():
         angle_diff = src.normalizeAngle(angle_diff)
 
         return src.foodFactor * angle_diff
+
+    def avoid_obstacles(self, obstacles: list) -> float:
+        total_force_x = 0
+        total_force_y = 0
+        
+        for obstacle in obstacles:
+            force = obstacle.repel_force(self.x, self.y)
+            total_force_x += force[0]
+            total_force_y += force[1]
+            
+        if total_force_x == 0 and total_force_y == 0:
+            return 0
+            
+        target_angle = math.atan2(total_force_y, total_force_x)
+        angle_diff = target_angle - self.angle
+        return src.obstacleFactor * src.normalizeAngle(angle_diff)
+        
     
     # 更新 bird 的座標，會跟動到 angle, x, y
-    def move(self, birds: list, foods: list)->None:
+    def move(self, birds: list, foods: list, obstacles: list)->None:
 
         # 找出視野內的鳥
         birdsInSight = []
@@ -237,6 +254,7 @@ class Bird():
                 foodsInSight.append(food)
         
         # 更新角度
+        self.angle += self.avoid_obstacles(obstacles)
         self.angle += self.separation(birdsInSight)
         self.angle += self.alignment(birdsInSight)
         self.angle += self.cohesion(birdsInSight)
