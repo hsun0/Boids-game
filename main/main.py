@@ -1,5 +1,6 @@
 import pygame
 import source as src
+from shark import Shark
 from bird import Bird
 import random
 import math
@@ -34,6 +35,9 @@ def main()->None:
         y = random.uniform(0, windowSize[1])
         foods.append(Food(x, y))
 
+    # 初始化鯊魚
+    shark = Shark(400, 300)
+
     # Main Loop
     running = True
     currentEnabled = False
@@ -41,6 +45,28 @@ def main()->None:
     clock = pygame.time.Clock()
     while running:
         
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w] and not keys[pygame.K_a] and not keys[pygame.K_d]:
+            shark.y -= src.sharkSpeed
+        elif keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d]:
+            shark.y += src.sharkSpeed
+        elif keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
+            shark.x -= src.sharkSpeed
+        elif keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
+            shark.x += src.sharkSpeed
+        elif keys[pygame.K_w] and keys[pygame.K_a]:
+            shark.y -= src.sharkSpeed / math.sqrt(2)
+            shark.x -= src.sharkSpeed / math.sqrt(2)
+        elif keys[pygame.K_w] and keys[pygame.K_d]:
+            shark.y -= src.sharkSpeed / math.sqrt(2)
+            shark.x += src.sharkSpeed / math.sqrt(2)
+        elif keys[pygame.K_s] and keys[pygame.K_a]:
+            shark.y += src.sharkSpeed / math.sqrt(2)
+            shark.x -= src.sharkSpeed / math.sqrt(2)
+        elif keys[pygame.K_s] and keys[pygame.K_d]:
+            shark.y += src.sharkSpeed / math.sqrt(2)
+            shark.x += src.sharkSpeed / math.sqrt(2)
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -128,6 +154,7 @@ def main()->None:
 
         for obstacle in obstacles:
             obstacle.display(window)
+        shark.display(window)
 
         # 畫出所有的鳥
         for bird in birds:
