@@ -3,27 +3,30 @@ import pygame
 import source as src
 
 class Bird():
-    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple)->None:
+    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple, group_id: int)->None:
+        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-        self.angle = angle # 速度方向(角度)
+        self.angle = angle
         self.energy = energy
         self.windowSize = windowSize
+        self.group_id = group_id  # 新增群體標識
 
     def display(self, window)->None:
+        # 預先計算三角函數值
         point = [
             (self.x + src.birdSize * 2 * math.cos(self.angle), self.y + src.birdSize * 2 * math.sin(self.angle)),
             (self.x + src.birdSize * math.cos(self.angle + 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle + 2 * math.pi / 3)),
             (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
         ]
 
-        # 調整透明度
         def adjustTrans(x: int)->int:
             if x == 255:
                 return 255
             return self.getTrans()
         
-        color = tuple(adjustTrans(x) for x in src.Colors['red'])
+        base_color = src.COLORS_BY_GROUP[self.group_id]
+        color = tuple(adjustTrans(x) for x in base_color)
         pygame.draw.polygon(window, color, point)
 
     def eat(self, foods: list)->None:
@@ -33,11 +36,17 @@ class Bird():
         for food in foods:
             if src.vectorLength((food.x - self.x, food.y - self.y)) > src.foodCollisionDistance:
                 continue
-            self.energy += 1
+            self.energy += food.energy
             removeList.append(food)
         
         for food in removeList:
             foods.remove(food)
+    
+    def beEaten(self, shark)->bool:
+        if src.vectorLength((shark.x - self.x, shark.y - self.y)) > src.sharkRadius:
+            return False
+        self.energy = 0
+        return True
 
     def getTrans(self)->int:
         if self.energy <= 0:
@@ -85,21 +94,24 @@ class Bird():
     
     def copy(self)->'Bird':
         self.energy >>= 1
-        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize)
-    
+        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize, self.group_id)  # 加入群體標識
+
+    def get_same_group_birds(self, birds_list: list) -> list:
+        return [bird for bird in birds_list if bird.group_id == self.group_id]
     ################################
     #以下四個 function 都是回傳改變的角度
     ################################
 
     # 避免碰撞
     def separation(self, birdsInSight: list)->float:
-        if len(birdsInSight) == 0:
+        
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
         dAngel = 0
 
         totalX, totalY = 0, 0
-
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             dx = bird.x - self.x
             dy = bird.y - self.y
 
@@ -120,13 +132,42 @@ class Bird():
 
         return src.sepFactor * dAngel
     
+    def separationDiffGroup(self, birdsInSight: list)->float:
+        diff_group_birds = [bird for bird in birdsInSight if bird.group_id != self.group_id]
+        if len(diff_group_birds) == 0:
+            return 0
+        dAngel = 0
+
+        totalX, totalY = 0, 0
+        for bird in diff_group_birds:
+            dx = bird.x - self.x
+            dy = bird.y - self.y
+
+            # 處理在邊界兩邊的情況
+            if abs(dx) > self.windowSize[0] - abs(dx):
+                dx = -1 * src.getSign(dx) * (self.windowSize[0] - abs(dx))
+            if abs(dy) > self.windowSize[1] - abs(dy):
+                dy = -1 * src.getSign(dy) * (self.windowSize[1] - abs(dy))
+
+            if src.vectorLength((dx, dy)) > src.collisionDistance:
+                continue
+            totalX += dx
+            totalY += dy
+        
+        dAngel -= (math.atan2(totalY, totalX) - self.angle)
+
+        dAngel = src.normalizeAngle(dAngel)
+
+        return src.sepDiffFactor * dAngel
+    
     # 跟隨
     def alignment(self, birdsInSight: list) -> float:
-        if len(birdsInSight) == 0:
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
             
         total_angle_diff = 0
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             # 計算角度差
             angle_diff = bird.angle - self.angle
                 
@@ -136,13 +177,14 @@ class Bird():
     
     # 集中
     def cohesion(self, birdsInSight: list) -> float:
-        if len(birdsInSight) == 0:
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
 
         avgX = 0
         avgY = 0
         
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             dx = bird.x - self.x
             dy = bird.y - self.y
             
@@ -156,8 +198,8 @@ class Bird():
             avgY += dy
         
         # 計算平均位置（相對於當前鳥的位置）
-        avgX /= len(birdsInSight)
-        avgY /= len(birdsInSight)
+        avgX /= len(same_group_birds)
+        avgY /= len(same_group_birds)
         
         # 計算到中心點的距離
         distance = math.sqrt(avgX * avgX + avgY * avgY)
@@ -210,9 +252,34 @@ class Bird():
         angle_diff = src.normalizeAngle(angle_diff)
 
         return src.foodFactor * angle_diff
+
+    def avoidObstacles(self, obstacles: list) -> float:
+        total_force_x = 0
+        total_force_y = 0
+        
+        for obstacle in obstacles:
+            force = obstacle.repel_force(self.x, self.y)
+            total_force_x += force[0]
+            total_force_y += force[1]
+            
+        if total_force_x == 0 and total_force_y == 0:
+            return 0
+            
+        target_angle = math.atan2(total_force_y, total_force_x)
+        angle_diff = target_angle - self.angle
+        return src.obstacleFactor * src.normalizeAngle(angle_diff)
+    
+    def avoidShark(self, shark)->float:
+        force = shark.repel_force(self.x, self.y)
+        target_angle = math.atan2(force[0], force[1])
+        if(force[0] == 0 and force[1] == 0):
+            return 0
+        angle_diff = target_angle - self.angle
+        return src.sharkFactor * src.normalizeAngle(angle_diff)
+        
     
     # 更新 bird 的座標，會跟動到 angle, x, y
-    def move(self, birds: list, foods: list)->None:
+    def move(self, birds: list, foods: list, obstacles: list, shark)->None:
 
         # 找出視野內的鳥
         birdsInSight = []
@@ -229,6 +296,8 @@ class Bird():
                 foodsInSight.append(food)
         
         # 更新角度
+        self.angle += self.avoidShark(shark)
+        self.angle += self.avoidObstacles(obstacles)
         self.angle += self.separation(birdsInSight)
         self.angle += self.alignment(birdsInSight)
         self.angle += self.cohesion(birdsInSight)
