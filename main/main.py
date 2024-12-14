@@ -36,6 +36,8 @@ def main()->None:
 
     # Main Loop
     running = True
+    currentEnabled = False
+    currentDirection = (0, -1)
     clock = pygame.time.Clock()
     while running:
         
@@ -50,6 +52,17 @@ def main()->None:
                 if event.key == pygame.K_o:
                     pos = pygame.mouse.get_pos()
                     obstacles.append(Obstacle(pos[0], pos[1]))
+                if event.key == pygame.K_SPACE:
+                    currentEnabled = not currentEnabled
+                    print(currentEnabled)
+                if event.key == pygame.K_UP:
+                    currentDirection = (0, -1)
+                if event.key == pygame.K_RIGHT:
+                    currentDirection = (1, 0)
+                if event.key == pygame.K_DOWN:  
+                    currentDirection = (0, 1)
+                if event.key == pygame.K_LEFT:
+                    currentDirection = (-1, 0)
 
             # 按下滑鼠左鍵，增加食物
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -69,6 +82,33 @@ def main()->None:
                         foodY = foodY - windowSize[1]
 
                     foods.append(Food(foodX, foodY))
+        
+        # enable current
+        if currentEnabled:
+            dPos = (currentDirection[0] * src.currentForce, currentDirection[1] * src.currentForce)
+            def move(obj):
+                if(type(obj) == Obstacle):
+                    obj.x += dPos[0] / 2
+                    obj.y += dPos[1] / 2
+                else:
+                    obj.x += dPos[0]
+                    obj.y += dPos[1]
+                if obj.x < 0:
+                    obj.x = obj.x + windowSize[0]
+                if obj.x > windowSize[0]:
+                    obj.x = obj.x - windowSize[0]
+                if obj.y < 0:
+                    obj.y = obj.y + windowSize[1]
+                if obj.y > windowSize[1]:
+                    obj.y = obj.y - windowSize[1]
+            for bird in birds:
+                move(bird)
+            for food in foods:
+                move(food)
+            for obstacle in obstacles:
+                # print(obstacle.points)
+                move(obstacle)
+                # print(obstacle.points)
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面
@@ -118,9 +158,11 @@ def main()->None:
         font = pygame.font.Font(None, 20)
         text = font.render(f'Foods: {len(foods)}', True, src.Colors['black'])
         window.blit(text, (10, 10))
+        text = font.render(f'Current Enabled: {currentEnabled}', True, src.Colors['black'])
+        window.blit(text, (10, 30))
         for i in range(src.groupNum):
             text = font.render(f'Group {i + 1}: {numbreOfBirds[i]}', True, src.COLORS_BY_GROUP[i])
-            window.blit(text, (10, 30 + 20 * i))
+            window.blit(text, (10, 50 + 20 * i))
 
         # 將緩衝區顯示到螢幕上
         pygame.display.flip()

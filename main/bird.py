@@ -36,7 +36,7 @@ class Bird():
         for food in foods:
             if src.vectorLength((food.x - self.x, food.y - self.y)) > src.foodCollisionDistance:
                 continue
-            self.energy += 1
+            self.energy += food.energy
             removeList.append(food)
         
         for food in removeList:

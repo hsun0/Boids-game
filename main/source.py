@@ -9,7 +9,8 @@ Colors = {
     'yellow': (255, 255, 0),
     'lime': (50, 180, 50),
     'background': (255,255,255),
-    'brown': (139, 69, 19)
+    'brown': (139, 69, 19),
+    'purple': (138, 43, 226)
 }
 
 # Arguments:
@@ -34,6 +35,7 @@ foodPerClick: int = 3
 giveFoodRadius: float = 30
 colorEnergy1: int = 5
 colorEnergy2: int = 10
+currentForce: int = 0.2
 
 groupNum = 3  # 群體數量
 COLORS_BY_GROUP = [
@@ -46,6 +48,13 @@ COLORS_BY_GROUP = [
 obstacleRadius = 20 # 障礙物半徑
 obstacleFactor = 0.15
 obstacleColor = Colors['brown']
+
+FOOD_COLOR = [
+    Colors['lime'],
+    Colors['purple'],
+    Colors['red']
+]
+
 # function
 def getSign(x)->int:
     if x > 0:
