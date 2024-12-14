@@ -98,14 +98,12 @@ class Bird():
 
     # 避免碰撞
     def separation(self, birdsInSight: list)->float:
-        
-        same_group_birds = self.get_same_group_birds(birdsInSight)
-        if len(same_group_birds) == 0:
+        if len(birdsInSight) == 0:
             return 0
         dAngel = 0
 
         totalX, totalY = 0, 0
-        for bird in same_group_birds:
+        for bird in birdsInSight:
             dx = bird.x - self.x
             dy = bird.y - self.y
 
@@ -117,8 +115,8 @@ class Bird():
 
             if src.vectorLength((dx, dy)) > src.collisionDistance:
                 continue
-            totalX += dx
-            totalY += dy
+            totalX += dx * [2, 1][self.group_id == bird.group_id]
+            totalY += dy * [2, 1][self.group_id == bird.group_id]
         
         dAngel -= (math.atan2(totalY, totalX) - self.angle)
 
