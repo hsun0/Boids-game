@@ -34,6 +34,13 @@ giveFoodRadius: float = 30
 colorEnergy1: int = 5
 colorEnergy2: int = 10
 
+NUM_GROUPS = 3  # 群體數量
+COLORS_BY_GROUP = [
+    (255, 0, 0),    # 紅色群體
+    (0, 255, 0),    # 綠色群體
+    (0, 0, 255),    # 藍色群體
+]
+
 # function
 def getSign(x)->int:
     if x > 0:

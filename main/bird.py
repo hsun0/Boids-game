@@ -3,12 +3,13 @@ import pygame
 import source as src
 
 class Bird():
-    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple)->None:
+    def __init__(self, x: float, y: float, angle: float, energy: int, windowSize: tuple, group_id: int)->None:
         self.x = x
         self.y = y
-        self.angle = angle # 速度方向(角度)
+        self.angle = angle
         self.energy = energy
         self.windowSize = windowSize
+        self.group_id = group_id  # 新增群體標識
 
     def display(self, window)->None:
         point = [
@@ -17,13 +18,13 @@ class Bird():
             (self.x + src.birdSize * math.cos(self.angle - 2 * math.pi / 3), self.y + src.birdSize * math.sin(self.angle - 2 * math.pi / 3))
         ]
 
-        # 調整透明度
         def adjustTrans(x: int)->int:
             if x == 255:
                 return 255
             return self.getTrans()
         
-        color = tuple(adjustTrans(x) for x in src.Colors['red'])
+        base_color = src.COLORS_BY_GROUP[self.group_id]
+        color = tuple(adjustTrans(x) for x in base_color)
         pygame.draw.polygon(window, color, point)
 
     def eat(self, foods: list)->None:
@@ -85,21 +86,24 @@ class Bird():
     
     def copy(self)->'Bird':
         self.energy >>= 1
-        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize)
-    
+        return Bird(self.x, self.y, self.angle, self.energy, self.windowSize, self.group_id)  # 加入群體標識
+
+    def get_same_group_birds(self, birds_list: list) -> list:
+        return [bird for bird in birds_list if bird.group_id == self.group_id]
     ################################
     #以下四個 function 都是回傳改變的角度
     ################################
 
     # 避免碰撞
     def separation(self, birdsInSight: list)->float:
-        if len(birdsInSight) == 0:
+        
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
         dAngel = 0
 
         totalX, totalY = 0, 0
-
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             dx = bird.x - self.x
             dy = bird.y - self.y
 
@@ -122,11 +126,12 @@ class Bird():
     
     # 跟隨
     def alignment(self, birdsInSight: list) -> float:
-        if len(birdsInSight) == 0:
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
             
         total_angle_diff = 0
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             # 計算角度差
             angle_diff = bird.angle - self.angle
                 
@@ -136,13 +141,14 @@ class Bird():
     
     # 集中
     def cohesion(self, birdsInSight: list) -> float:
-        if len(birdsInSight) == 0:
+        same_group_birds = self.get_same_group_birds(birdsInSight)
+        if len(same_group_birds) == 0:
             return 0
 
         avgX = 0
         avgY = 0
         
-        for bird in birdsInSight:
+        for bird in same_group_birds:
             dx = bird.x - self.x
             dy = bird.y - self.y
             
@@ -156,8 +162,8 @@ class Bird():
             avgY += dy
         
         # 計算平均位置（相對於當前鳥的位置）
-        avgX /= len(birdsInSight)
-        avgY /= len(birdsInSight)
+        avgX /= len(same_group_birds)
+        avgY /= len(same_group_birds)
         
         # 計算到中心點的距離
         distance = math.sqrt(avgX * avgX + avgY * avgY)
