@@ -89,6 +89,19 @@ def main()->None:
                 if(type(obj) == Obstacle):
                     obj.x += dPos[0] / 2
                     obj.y += dPos[1] / 2
+                elif(type(obj) == Bird):
+                    # 計算風向角度
+                    wind_angle = math.atan2(dPos[1], dPos[0])
+                    # 計算當前角度和風向的差異
+                    angle_diff = src.normalizeAngle(wind_angle - obj.angle)
+                    # 根據風力大小調整角度
+                    angle_change = angle_diff * src.currentAngleFactor
+                    # 更新鳥的角度
+                    obj.angle = src.normalizeAngle(obj.angle + angle_change)
+                    # 移動位置
+                    obj.x += dPos[0]
+                    obj.y += dPos[1] 
+
                 else:
                     obj.x += dPos[0]
                     obj.y += dPos[1]

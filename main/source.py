@@ -36,7 +36,7 @@ giveFoodRadius: float = 30
 colorEnergy1: int = 5
 colorEnergy2: int = 10
 currentForce: int = 0.2
-
+currentAngleFactor = 0.01
 groupNum = 3  # 群體數量
 COLORS_BY_GROUP = [
     (255, 0, 0),    # 紅色群體
