@@ -15,8 +15,10 @@ def main()->None:
     windowSize = window.get_size()
     # 初始化鳥群
     birds = []
+    numbreOfBirds = []
     birds_per_group = src.birdNum // src.NUM_GROUPS
     for group_id in range(src.NUM_GROUPS):
+        numbreOfBirds.append(birds_per_group)
         for _ in range(birds_per_group):
             x = random.uniform(0, windowSize[0])
             y = random.uniform(0, windowSize[1])
@@ -79,10 +81,12 @@ def main()->None:
 
             # 移除沒有能量的鳥
             if bird.energy <= 0:
+                numbreOfBirds[bird.group_id] -= 1
                 removeList.append(bird)
 
             # 當鳥的能量大於一定量時，複製一隻鳥
             if bird.energy >= src.copyEnergy:
+                numbreOfBirds[bird.group_id] += 1
                 birds.append(bird.copy())
 
         for food in foods:
@@ -105,10 +109,11 @@ def main()->None:
 
         # 在左上角顯示鳥的數量
         font = pygame.font.Font(None, 20)
-        text = font.render(f'Birds: {len(birds)}', True, src.Colors['black'])
-        window.blit(text, (10, 10))
         text = font.render(f'Foods: {len(foods)}', True, src.Colors['black'])
-        window.blit(text, (10, 30))
+        window.blit(text, (10, 10))
+        for i in range(src.NUM_GROUPS):
+            text = font.render(f'Group {i + 1}: {numbreOfBirds[i]}', True, src.COLORS_BY_GROUP[i])
+            window.blit(text, (10, 30 + 20 * i))
 
         # 將緩衝區顯示到螢幕上
         pygame.display.flip()
