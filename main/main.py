@@ -54,7 +54,6 @@ def main()->None:
                     obstacles.append(Obstacle(pos[0], pos[1]))
                 if event.key == pygame.K_SPACE:
                     currentEnabled = not currentEnabled
-                    print(currentEnabled)
                 if event.key == pygame.K_UP:
                     currentDirection = (0, -1)
                 if event.key == pygame.K_RIGHT:
@@ -106,9 +105,7 @@ def main()->None:
             for food in foods:
                 move(food)
             for obstacle in obstacles:
-                # print(obstacle.points)
                 move(obstacle)
-                # print(obstacle.points)
         
         # Note: pygame 會將所有的東西畫在緩衝區，然後再透過 flip() 顯示到螢幕上
         # 清除畫面
