@@ -1,6 +1,5 @@
 import pygame
 import math
-import os
 import source as src
 
 class Shark:
