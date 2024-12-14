@@ -23,6 +23,7 @@ sepDiffFactor: float = 0.2
 aliFactor: float = 0.08
 cohFactor: float = 0.1
 foodFactor: float = 0.05
+sharkFactor: float = 0.3
 birdNum: int = 75
 foodNum: int = 100
 FPS: int = 60
@@ -41,6 +42,7 @@ currentAngleFactor = 0.01
 groupNum = 3  # 群體數量
 sharkSpeed = 2
 sharkScale = 0.06
+sharkRadius = 25
 COLORS_BY_GROUP = [
     (255, 0, 0),    # 紅色群體
     (0, 255, 0),    # 綠色群體

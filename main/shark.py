@@ -20,6 +20,7 @@ class Shark:
         }
         self.sharkImg = None
         self.load()
+        self.radius = src.sharkRadius
 
     def load(self) -> None:
         originalShark = pygame.image.load(self.imgPath).convert_alpha()
@@ -37,6 +38,7 @@ class Shark:
 
     def display(self, window: pygame.Surface) -> None:
         sharkRect = self.sharkImg.get_rect(center=(self.x, self.y))
+        # pygame.draw.circle(window, (255, 0, 0), (int(self.x), int(self.y)), self.radius, 1)
         window.blit(self.sharkImg, sharkRect)
 
     def move(self, dir: str) -> None:
@@ -70,3 +72,13 @@ class Shark:
             self.sharkImg = self.sharkImgs['downright']
         self.x %= self.windowSize[0]
         self.y %= self.windowSize[1]
+
+    def repel_force(self, bird_x: float, bird_y: float) -> tuple:
+        dx = bird_x - self.x
+        dy = bird_y - self.y
+        distance = math.sqrt(dx*dx + dy*dy)
+        
+        if distance < self.radius * 3:
+            force = (self.radius * 3 - distance) / (self.radius * 3)
+            return (dx/distance * force, dy/distance * force)
+        return (0, 0)

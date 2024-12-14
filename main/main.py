@@ -156,7 +156,7 @@ def main()->None:
         # 畫出所有的鳥
         for bird in birds:
             # 更新鳥的座標
-            bird.move(birds, foods, obstacles)
+            bird.move(birds, foods, obstacles, shark)
             bird.eat(foods)
             bird.display(window)
 
