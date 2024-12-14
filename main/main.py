@@ -10,16 +10,19 @@ def main()->None:
     pygame.init()
 
     # 設定視窗
-    window = pygame.display.set_mode((800, 600), pygame.FULLSCREEN)
+    window = pygame.display.set_mode((800, 600))
     pygame.display.set_caption('Boids Simulation')
     windowSize = window.get_size()
     # 初始化鳥群
     birds = []
-    for _ in range(src.birdNum):
-        x = random.uniform(0, windowSize[0])
-        y = random.uniform(0, windowSize[1])
-        angle = random.uniform(-math.pi, math.pi)
-        birds.append(Bird(x, y, angle, src.initEnergy, windowSize))
+    birds_per_group = src.birdNum // src.NUM_GROUPS
+    for group_id in range(src.NUM_GROUPS):
+        for _ in range(birds_per_group):
+            x = random.uniform(0, windowSize[0])
+            y = random.uniform(0, windowSize[1])
+            angle = random.uniform(-math.pi, math.pi)
+            birds.append(Bird(x, y, angle, src.initEnergy, windowSize, group_id))
+
 
     # 初始化食物
     foods = []
@@ -112,6 +115,11 @@ def main()->None:
 
         # FPS
         clock.tick(src.FPS)
+        background = pygame.Surface(windowSize)
+        background = background.convert()
+        background.fill(src.Colors['background'])
+
+    
     pygame.quit()
 
 if __name__ == '__main__':

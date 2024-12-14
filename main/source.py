@@ -20,7 +20,7 @@ sepFactor: float = 0.02
 aliFactor: float = 0.08
 cohFactor: float = 0.1
 foodFactor: float = 0.05
-birdNum: int = 50
+birdNum: int = 75
 foodNum: int = 100
 FPS: int = 60
 birdSize: float = 4.5
@@ -28,11 +28,18 @@ initEnergy: int = 7
 foodSize: float = 3
 foodCollisionDistance: float = 5
 copyEnergy: int = 14
-foodPerSecond: int= 5
+foodPerSecond: int= 10
 foodPerClick: int = 3    
 giveFoodRadius: float = 30
 colorEnergy1: int = 5
 colorEnergy2: int = 10
+
+NUM_GROUPS = 3  # 群體數量
+COLORS_BY_GROUP = [
+    (255, 0, 0),    # 紅色群體
+    (0, 255, 0),    # 綠色群體
+    (0, 0, 255),    # 藍色群體
+]
 
 # function
 def getSign(x)->int:
