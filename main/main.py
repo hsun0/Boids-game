@@ -14,6 +14,7 @@ import source as src
 
 
 
+
 def main()->None:
     # 要有這個不然無法使用 pygame 的功能
     pygame.init()
@@ -62,9 +63,12 @@ def main()->None:
     # 初始化食物
     foods = []
     for _ in range(src.foodNum):
-        x = random.uniform(0, windowSize[0])
-        y = random.uniform(0, windowSize[1])
-        foods.append(Food(x, y))
+        while True:
+            x = random.uniform(0, windowSize[0])
+            y = random.uniform(0, windowSize[1])
+            if not Food.is_food_collide_obstacle(x, y, obstacles):
+                foods.append(Food(x, y))
+                break
 
     # 初始化鯊魚
     shark = Shark(400, 300, windowSize)
@@ -136,20 +140,20 @@ def main()->None:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 for _ in range(src.foodPerClick):
-                    angle = random.uniform(0, 2 * math.pi)
-                    foodX = x + random.uniform(0, src.giveFoodRadius) * math.cos(angle)
-                    foodY = y + random.uniform(0, src.giveFoodRadius) * math.sin(angle)
-
-                    if foodX < 0:
-                        foodX = foodX + windowSize[0]
-                    if foodX > windowSize[0]:
-                        foodX = foodX - windowSize[0]
-                    if foodY < 0:
-                        foodY = foodY + windowSize[1]
-                    if foodY > windowSize[1]:
-                        foodY = foodY - windowSize[1]
-
-                    foods.append(Food(foodX, foodY))
+                    attempts = 0
+                    while attempts < 10:  # 最多嘗試10次
+                        angle = random.uniform(0, 2 * math.pi)
+                        foodX = x + random.uniform(0, src.giveFoodRadius) * math.cos(angle)
+                        foodY = y + random.uniform(0, src.giveFoodRadius) * math.sin(angle)
+                        
+                        # 邊界處理
+                        foodX = foodX % windowSize[0]
+                        foodY = foodY % windowSize[1]
+                        
+                        if not Food.is_food_collide_obstacle(foodX, foodY, obstacles):
+                            foods.append(Food(foodX, foodY))
+                            break
+                        attempts += 1
         
         # enable current
         if currentEnabled:
@@ -219,7 +223,8 @@ def main()->None:
                 birds.append(bird.copy())
 
         for food in foods:
-            food.display(window)
+            if not Food.is_food_collide_obstacle(food.x, food.y, obstacles):
+                food.display(window)
 
         # 移除能量為 0 的鳥
         for bird in removeList:
@@ -227,9 +232,14 @@ def main()->None:
 
         if pygame.time.get_ticks() % 1000 < clock.get_time():
             for _ in range(src.foodPerSecond):
-                x = random.uniform(0, windowSize[0])
-                y = random.uniform(0, windowSize[1])
-                foods.append(Food(x, y))
+                attempts = 0 
+                while attempts < 10:
+                    x = random.uniform(0, windowSize[0])
+                    y = random.uniform(0, windowSize[1])
+                    if not Food.is_food_collide_obstacle(x, y, obstacles):
+                        foods.append(Food(x, y))
+                        break
+                    attempts += 1
 
         # 每五秒減少一次所有鳥的能量
         if pygame.time.get_ticks() % 5000 < clock.get_time():
