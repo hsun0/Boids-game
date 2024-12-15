@@ -122,7 +122,7 @@ def main()->None:
                         src.foodPerClick = new_settings['foodPerClick']
                         enableShark = new_settings['enable_shark']
                         
-                if event.key == pygame.K_o:
+                if event.key == pygame.K_e:
                     pos = pygame.mouse.get_pos()
                     obstacles.append(Obstacle(pos[0], pos[1]))
                 if event.key == pygame.K_SPACE:
