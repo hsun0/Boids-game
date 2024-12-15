@@ -11,11 +11,11 @@ class SettingsUI:
             'aliFactor': src.aliFactor,
             'cohFactor': src.cohFactor,
             'foodFactor': src.foodFactor,
+            'foodPerSecond': src.foodPerSecond,
+            'foodPerClick': src.foodPerClick,
             'birdNum': src.birdNum,
             'foodNum': src.foodNum,
             'groupNum': src.groupNum,
-            'foodPerSecond': src.foodPerSecond,
-            'foodPerClick': src.foodPerClick,
             'enable_shark': False
         }
         self.sliders = self.createBar()
@@ -42,15 +42,15 @@ class SettingsUI:
             'aliFactor': 0.2,
             'cohFactor': 0.2,
             'foodFactor': 0.2,
+            'foodPerSecond': 30,
+            'foodPerClick': 10,
             'birdNum': 200,
             'foodNum': 200,
-            'groupNum': 5,
-            'foodPerSecond': 30,
-            'foodPerClick': 10
+            'groupNum': 5
         }
         return max_values.get(key, 100)
 
-    def run(self):
+    def run(self, first = "None")->dict:
         running = True
         while running:
             self.window.fill(src.Colors['background'])
@@ -97,12 +97,27 @@ class SettingsUI:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return None
-            
+            codeTable = {
+                'speed': 'Speed',
+                'viewDistance': 'View Distance',
+                'collisionDistance': 'Collision Distance',
+                'sepFactor': 'Separation Factor',
+                'aliFactor': 'Alignment Factor',
+                'cohFactor': 'Cohesion Factor',
+                'foodFactor': 'Food Factor',
+                'birdNum': 'Fish Number',
+                'foodNum': 'Food Number',
+                'groupNum': 'Group Number',
+                'foodPerSecond': 'Food Per Second',
+                'foodPerClick': 'Food Per Click',
+            }
             # 繪製所有slider和文字
             y = 50
             for key, value in self.settings.items():
                 if key != 'enable_shark':
-                    text = self.font.render(f"{key}: {value:.2f}", True, src.Colors['black'])
+                    if first == "None" and (key == "birdNum" or key == "foodNum" or key == "groupNum"):
+                        continue
+                    text = self.font.render(f"{codeTable[key]}: {value:.2f}", True, src.Colors['black'])
                     self.window.blit(text, (20, y-10))
                     pygame.draw.rect(self.window, src.Colors['black'], self.sliders[key]['rect'])
                     pygame.draw.rect(self.window, src.Colors['red'], self.sliders[key]['btn_rect'])

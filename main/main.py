@@ -25,7 +25,7 @@ def main()->None:
 
      # 顯示設定介面
     settings_ui = SettingsUI(window)
-    settings = settings_ui.run()
+    settings = settings_ui.run("first")
     
     if settings is None:  # 如果使用者關閉視窗
         pygame.quit()
