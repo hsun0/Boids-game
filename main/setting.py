@@ -80,10 +80,18 @@ class SettingsUI:
                                 min(event.pos[0], slider['rect'].right))
                             value = ((slider['btn_rect'].centerx - slider['rect'].left) 
                                 / slider['rect'].width * self.getMax(key))
-                                
+
                             # 確保groupNum為1-8的整數
                             if key == 'groupNum':
                                 value = max(1, min(8, round(value)))
+                            elif key == 'birdNum':
+                                value = max(1, min(200, round(value)))
+                            elif key == 'foodNum':
+                                value = max(1, min(200, round(value)))
+                            elif key == 'foodPerSecond':
+                                value = max(1, min(30, round(value)))
+                            elif key == 'foodPerClick':
+                                value = max(1, min(10, round(value)))
                             self.settings[key] = value
                             
                 if event.type == pygame.KEYDOWN:
