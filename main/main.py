@@ -246,7 +246,7 @@ def main()->None:
         font = pygame.font.Font(None, 20)
         text = font.render(f'Foods: {len(foods)}', True, src.Colors['black'])
         window.blit(text, (10, 10))
-        text = font.render(f'Current Enabled: {currentEnabled}', True, src.Colors['black'])
+        text = font.render(f'Current: {currentEnabled}', True, src.Colors['black'])
         window.blit(text, (10, 30))
         for i in range(src.groupNum):
             text = font.render(f'Group {i + 1}: {numbreOfBirds[i]}', True, src.COLORS_BY_GROUP[i])
