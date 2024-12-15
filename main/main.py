@@ -10,11 +10,6 @@ from setting import SettingsUI
 import pygame
 import source as src
 
-
-
-
-
-
 def main()->None:
     # 要有這個不然無法使用 pygame 的功能
     pygame.init()
@@ -31,6 +26,7 @@ def main()->None:
         pygame.quit()
         return
     # 更新設定
+    src.sharkSpeed = settings['sharkSpeed']
     src.speed = settings['speed']
     src.viewDistance = settings['viewDistance']
     src.collisionDistance = settings['collisionDistance']
@@ -39,7 +35,6 @@ def main()->None:
     src.cohFactor = settings['cohFactor']
     src.foodFactor = settings['foodFactor']
     src.birdNum = int(settings['birdNum'])
-    src.foodNum = int(settings['foodNum'])
     src.groupNum = int(settings['groupNum'])
     src.foodPerSecond = int(settings['foodPerSecond'])
     src.foodPerClick = int(settings['foodPerClick'])
@@ -110,6 +105,7 @@ def main()->None:
                     new_settings = settings_ui.run()
 
                     if new_settings:
+                        src.sharkSpeed = new_settings['sharkSpeed']
                         src.speed = new_settings['speed'] 
                         src.viewDistance = new_settings['viewDistance']
                         src.collisionDistance = new_settings['collisionDistance']
@@ -118,11 +114,9 @@ def main()->None:
                         src.cohFactor = new_settings['cohFactor']
                         src.foodFactor = new_settings['foodFactor']
                         src.birdNum = new_settings['birdNum']
-                        src.foodNum = new_settings['foodNum']
                         src.groupNum = new_settings['groupNum']
                         src.foodPerSecond = new_settings['foodPerSecond']
                         src.foodPerClick = new_settings['foodPerClick']
-                        enableShark = new_settings['enable_shark']
                         
                 if event.key == pygame.K_e:
                     pos = pygame.mouse.get_pos()

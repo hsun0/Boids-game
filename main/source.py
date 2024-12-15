@@ -38,11 +38,11 @@ giveFoodRadius: float = 30
 colorEnergy1: int = 5
 colorEnergy2: int = 10
 currentForce: int = 0.2
-currentAngleFactor = 0.01
-groupNum = 3  # 群體數量
-sharkSpeed = 2
-sharkScale = 0.06
-sharkRadius = 25
+currentAngleFactor: float = 0.01
+groupNum: int = 3  # 群體數量
+sharkSpeed: float = 2
+sharkScale: float = 0.06
+sharkRadius: float = 25
 COLORS_BY_GROUP = [
     (255, 0, 0),    # 紅
     (0, 255, 0),    # 綠
@@ -52,9 +52,9 @@ COLORS_BY_GROUP = [
 ]
 
 # 障礙物參數
-obstacleRadius = 20 # 障礙物半徑
-obstacleFactor = 0.15
-obstacleColor = Colors['brown']
+obstacleRadius: float = 20 # 障礙物半徑
+obstacleFactor: float = 0.15
+obstacleColor: str = Colors['brown']
 
 FOOD_COLOR = [
     Colors['lime'],
