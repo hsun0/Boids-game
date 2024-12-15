@@ -7,7 +7,7 @@ class Shark:
         self.x = x
         self.y = y
         self.windowSize = windowSize
-        self.imgPath = "main/shark.png"
+        self.imgPath = "img/shark.png"
         self.sharkImgs = {
             "up": None,
             "down": None,
