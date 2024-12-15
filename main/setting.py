@@ -95,8 +95,8 @@ class SettingsUI:
                             self.settings[key] = value
                             
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.settings['enable_shark'] = not self.settings['enable_shark']
+                    if event.key == pygame.K_ESCAPE:
+                        return None
             
             # 繪製所有slider和文字
             y = 50
@@ -107,8 +107,6 @@ class SettingsUI:
                     pygame.draw.rect(self.window, src.Colors['black'], self.sliders[key]['rect'])
                     pygame.draw.rect(self.window, src.Colors['red'], self.sliders[key]['btn_rect'])
                     y += 40
-            
-            # 繪製鯊魚模式開關
             
             
             # 繪製開始按鈕

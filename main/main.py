@@ -104,6 +104,8 @@ def main()->None:
             # 按下 ESC 鍵結束程式
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    running = False
+                if event.key == pygame.K_TAB:
                     settings_ui = SettingsUI(window)
                     new_settings = settings_ui.run()
 
