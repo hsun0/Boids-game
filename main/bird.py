@@ -276,7 +276,29 @@ class Bird():
             return 0
         angle_diff = target_angle - self.angle
         return src.sharkFactor * src.normalizeAngle(angle_diff)
-        
+    
+    def changeGroup(self, birds: list)->None:
+        score = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0
+        }
+        for bird in birds:
+            if src.vectorLength((bird.x - self.x, bird.y - self.y)) >= src.birdCollisionDistance:
+                continue
+            score[bird.group_id] += bird.energy
+        mxscr = 0
+        mxid = -1
+        for i in range(5):
+            if score[i] > mxscr:
+                mxscr = score[i]
+                mxid = i
+        if mxid == -1 or mxid == self.group_id or mxscr < score[self.group_id] * 2:
+            return []
+        return [Bird(self.x, self.y, self.angle, self.energy, self.windowSize, mxid)]
+        # return score
     
     # 更新 bird 的座標，會跟動到 angle, x, y
     def move(self, birds: list, foods: list, obstacles: list, shark)->None:

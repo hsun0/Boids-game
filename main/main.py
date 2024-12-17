@@ -210,9 +210,15 @@ def main()->None:
             bird.beEaten(shark)
             bird.display(window)
 
+            # 改變鳥的顏色
+            t = bird.changeGroup(birds)
+            if len(t) != 0:
+                removeList.append(bird)
+                birds.append(t[0])
+                numbreOfBirds[t[0].group_id] += 1
+
             # 移除沒有能量的鳥
             if bird.energy <= 0:
-                numbreOfBirds[bird.group_id] -= 1
                 removeList.append(bird)
 
             # 當鳥的能量大於一定量時，複製一隻鳥
@@ -226,7 +232,9 @@ def main()->None:
 
         # 移除能量為 0 的鳥
         for bird in removeList:
-            birds.remove(bird)
+            if bird in birds:
+                numbreOfBirds[bird.group_id] -= 1
+                birds.remove(bird)
 
         if pygame.time.get_ticks() % 1000 < clock.get_time():
             for _ in range(src.foodPerSecond):
