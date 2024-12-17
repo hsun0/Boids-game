@@ -299,6 +299,7 @@ class Bird():
         self.angle += self.avoidShark(shark)
         self.angle += self.avoidObstacles(obstacles)
         self.angle += self.separation(birdsInSight)
+        self.angle += self.separationDiffGroup(birdsInSight)
         self.angle += self.alignment(birdsInSight)
         self.angle += self.cohesion(birdsInSight)
         self.angle += self.goToFood(foodsInSight)

@@ -31,6 +31,7 @@ def main()->None:
     src.viewDistance = settings['viewDistance']
     src.collisionDistance = settings['collisionDistance']
     src.sepFactor = settings['sepFactor']
+    src.sepDiffFactor = (settings['sepFactor'] * 2)
     src.aliFactor = settings['aliFactor']
     src.cohFactor = settings['cohFactor']
     src.foodFactor = settings['foodFactor']
@@ -110,6 +111,7 @@ def main()->None:
                         src.viewDistance = new_settings['viewDistance']
                         src.collisionDistance = new_settings['collisionDistance']
                         src.sepFactor = new_settings['sepFactor']
+                        src.sepDiffFactor = (settings['sepFactor'] * 2)
                         src.aliFactor = new_settings['aliFactor'] 
                         src.cohFactor = new_settings['cohFactor']
                         src.foodFactor = new_settings['foodFactor']
