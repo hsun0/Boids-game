@@ -38,7 +38,6 @@ class Shark:
 
     def display(self, window: pygame.Surface) -> None:
         sharkRect = self.sharkImg.get_rect(center=(self.x, self.y))
-        # pygame.draw.circle(window, (255, 0, 0), (int(self.x), int(self.y)), self.radius, 1)
         window.blit(self.sharkImg, sharkRect)
 
     def move(self, dir: str, obstacles: list) -> None:

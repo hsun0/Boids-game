@@ -80,7 +80,6 @@ class SettingsUI:
                             value = ((slider['btn_rect'].centerx - slider['rect'].left) 
                                 / slider['rect'].width * self.getMax(key))
 
-                            # 確保groupNum為1-8的整數
                             if key == 'groupNum':
                                 value = max(1, min(8, round(value)))
                             elif key == 'birdNum':
