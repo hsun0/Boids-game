@@ -1,15 +1,23 @@
 # Boids模擬鳥類群集行為規則
 
-## Note
-這不是紙本報告
+中山大學人工智慧導論作業
 
 ## Install environment
+本專案使用 uv 管理。
 ```
-pip install -r requirements.txt
+uv sync
 ```
+
+## 組員
+- B123040053 張承勛
+- B112040016 陳宥辰
+- B123040024 洪書亞
+- B123040044 侯廷翰
+- B123040048 吳紹彰
+
 ## Run
 ```
-python3 main/main.py
+uv run main/main.py
 ```
 
 ## 調整參數
